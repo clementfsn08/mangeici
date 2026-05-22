@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANGEICI — Panneau Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--orange:#FF5A1F;--orange-dim:rgba(255,90,31,0.12);--orange-border:rgba(255,90,31,0.28);--black:#080808;--sidebar:#0D0D0D;--card:#121212;--card2:#1A1A1A;--border:#1E1E1E;--border2:#272727;--white:#F2EDE6;--muted:rgba(242,237,230,0.42);--green:#4ade80;--green-dim:rgba(74,222,128,0.1);--red:#f87171;--red-dim:rgba(248,113,113,0.1);--gold:#facc15;--blue:#60a5fa;--font-d:'Syne',sans-serif;--font-b:'DM Sans',sans-serif;--sw:220px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{background:var(--black);color:var(--white);font-family:var(--font-b);min-height:100vh;display:flex}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:var(--sidebar);border-right:1px solid var(--border);height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:50;overflow-y:auto}
+.sb-logo{padding:20px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;text-decoration:none}
+.sb-logo-icon{width:30px;height:30px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.sb-logo-text{font-family:var(--font-d);font-size:16px;font-weight:800;letter-spacing:-.03em;color:var(--white)}
+.sb-logo-text span{color:var(--red)}
+.admin-badge{margin:12px 18px;background:var(--red-dim);border:1px solid rgba(248,113,113,0.3);border-radius:8px;padding:8px 12px;font-size:11px;font-weight:600;color:var(--red);letter-spacing:.08em;text-transform:uppercase;text-align:center}
+.sb-nav{flex:1;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.sb-section{font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:10px 10px 6px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:all .18s;font-size:13px;color:var(--muted);text-decoration:none;border:1px solid transparent;user-select:none}
+.sb-item:hover{background:var(--card);color:var(--white)}
+.sb-item.active{background:var(--red-dim);border-color:rgba(248,113,113,0.25);color:var(--red);font-weight:500}
+.sb-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.sb-footer{padding:12px 10px;border-top:1px solid var(--border)}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;min-height:100vh;display:flex;flex-direction:column}
+.topbar{height:58px;padding:0 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,0.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:40}
+.topbar-title{font-family:var(--font-d);font-size:15px;font-weight:700}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.tb-btn{background:var(--card2);border:1px solid var(--border2);color:var(--muted);padding:7px 14px;border-radius:8px;font-family:var(--font-b);font-size:12px;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:6px}
+.tb-btn:hover{color:var(--white);border-color:var(--border)}
+.admin-avatar{width:32px;height:32px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:13px;font-weight:800}
+
+.page{display:none;padding:24px;flex:1}
+.page.active{display:block;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.kpi-label{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.kpi-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.kpi-val{font-family:var(--font-d);font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1;margin-bottom:4px}
+.kpi-sub{font-size:11px;color:var(--muted)}
+
+/* TABLE */
+.table-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.table-head{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.table-title{font-family:var(--font-d);font-size:14px;font-weight:700}
+.table-actions{display:flex;gap:8px;flex-wrap:wrap}
+.t-search{background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:12px;padding:7px 14px;border-radius:7px;outline:none;width:200px;transition:border-color .2s}
+.t-search:focus{border-color:var(--orange-border)}.t-search::placeholder{color:var(--muted)}
+.t-filter{background:var(--card2);border:1px solid var(--border);color:var(--muted);font-family:var(--font-b);font-size:12px;padding:7px 14px;border-radius:7px;outline:none;cursor:pointer;appearance:none}
+table{width:100%;border-collapse:collapse}
+thead tr{border-bottom:1px solid var(--border)}
+th{font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:10px 20px;text-align:left}
+td{padding:12px 20px;font-size:13px;border-bottom:1px solid var(--border)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.015)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;padding:3px 9px;border-radius:100px}
+.badge-actif{background:var(--green-dim);color:var(--green);border:1px solid rgba(74,222,128,.25)}
+.badge-attente{background:rgba(250,204,21,.1);color:var(--gold);border:1px solid rgba(250,204,21,.25)}
+.badge-suspendu{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,.25)}
+.badge-premium{background:var(--orange-dim);color:var(--orange);border:1px solid var(--orange-border)}
+.badge-pro{background:rgba(250,204,21,.1);color:var(--gold);border:1px solid rgba(250,204,21,.2)}
+.badge-starter{background:rgba(96,165,250,.1);color:var(--blue);border:1px solid rgba(96,165,250,.2)}
+.badge-gratuit{background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+.action-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:var(--font-b);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all .15s;margin-right:4px}
+.action-btn:hover{color:var(--white);border-color:var(--border2)}
+.action-btn.approve:hover{color:var(--green);border-color:rgba(74,222,128,.3);background:var(--green-dim)}
+.action-btn.suspend:hover{color:var(--red);border-color:rgba(248,113,113,.3);background:var(--red-dim)}
+.action-btn.view:hover{color:var(--orange);border-color:var(--orange-border);background:var(--orange-dim)}
+
+/* STATS PAGE */
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.stat-card-title{font-family:var(--font-d);font-size:13px;font-weight:700;margin-bottom:16px}
+.revenue-big{font-family:var(--font-d);font-size:42px;font-weight:800;letter-spacing:-.03em;color:var(--green);margin-bottom:4px}
+.revenue-sub{font-size:12px;color:var(--muted)}
+.plan-breakdown{display:flex;flex-direction:column;gap:10px}
+.plan-row{display:flex;align-items:center;gap:12px}
+.plan-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.plan-bar-bg{flex:1;height:8px;background:var(--card2);border-radius:4px;overflow:hidden}
+.plan-bar-fill{height:100%;border-radius:4px}
+.plan-count{font-family:var(--font-d);font-size:13px;font-weight:700;min-width:28px;text-align:right}
+
+/* LOADING */
+.loading-row td{text-align:center;color:var(--muted);font-size:13px;padding:40px}
+.spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* MODAL DETAIL */
+.detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .25s}
+.detail-overlay.open{opacity:1;pointer-events:all}
+.detail-modal{background:var(--card);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto;transform:translateY(16px);transition:transform .25s}
+.detail-overlay.open .detail-modal{transform:translateY(0)}
+.dm-head{padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between}
+.dm-title{font-family:var(--font-d);font-size:18px;font-weight:800}
+.dm-close{background:var(--card2);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.dm-close:hover{background:var(--border2);color:var(--white)}
+.dm-body{padding:18px 24px 24px}
+.dm-field{margin-bottom:14px}
+.dm-label{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:4px}
+.dm-val{font-size:14px}
+.dm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dm-actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.dm-btn{flex:1;padding:11px;border-radius:10px;font-family:var(--font-d);font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;min-width:100px}
+.dm-btn.approve{background:var(--green);color:#000}.dm-btn.approve:hover{opacity:.88}
+.dm-btn.suspend{background:var(--red-dim);color:var(--red);border:1px solid rgba(248,113,113,.3)}.dm-btn.suspend:hover{background:var(--red);color:#fff}
+.dm-btn.cancel{background:var(--card2);color:var(--muted);border:1px solid var(--border)}.dm-btn.cancel:hover{color:var(--white)}
+
+.tb-btn.active{background:var(--orange)!important;color:white!important;border-color:var(--orange)!important}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:500;background:var(--green);color:#000;font-family:var(--font-d);font-size:13px;font-weight:700;padding:12px 22px;border-radius:100px;box-shadow:0 8px 28px rgba(74,222,128,.3);transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.error{background:var(--red);color:#fff;box-shadow:0 8px 28px rgba(248,113,113,.3)}
+
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.stats-row{grid-template-columns:1fr}}
+</style>
+
+<script>
+// STATE
+var ALL_RESTOS = [];
+var ALL_PAYS   = [];
+var filterSearch = '';
+var filterStatut = '';
+var filterPlan   = '';
+
+// SUPABASE
+var SUPA_URL = "https://ldcweouzknksuudvroqu.supabase.co";
+var SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3dlb3V6a25rc3V1ZHZyb3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA0NjAsImV4cCI6MjA5MTY3NjQ2MH0.vyCqou8IAugFszrizK0eVRu3G2HylNKZmEp8vn0oKoE";
+var HDR = {apikey:SUPA_KEY, Authorization:"Bearer "+SUPA_KEY, "Content-Type":"application/json"};
+
+function supa(ep, q) {
+  return fetch(SUPA_URL+"/rest/v1/"+ep+(q||""), {headers:HDR})
+    .then(function(r){
+      if (!r.ok) { console.error('Supabase error:', r.status, ep); return []; }
+      return r.json();
+    })
+    .catch(function(err){
+      console.error('Supabase fetch error:', err, ep);
+      return [];
+    });
+}
+function supaPatch(ep, id, body) {
+  return fetch(SUPA_URL+"/rest/v1/"+ep+"?id=eq."+id, {method:"PATCH",headers:HDR,body:JSON.stringify(body)}).then(function(r){return r.ok;});
+}
+function supaDelete(ep, id) {
+  return fetch(SUPA_URL+"/rest/v1/"+ep+"?id=eq."+id, {method:"DELETE",headers:HDR}).then(function(r){return r.ok;});
+}
+
+// NAVIGATION
+var TITLES = {
+  overview:"Tableau de bord", restaurants:"Restaurants", paiements:"Paiements",
+  stats:"Revenus & Stats", codes:"Codes de reduction", plans:"Plans d'abonnement",
+  abonnements:"Abonnements", avis:"Avis clients"
+};
+
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(function(i){i.classList.remove('active');});
+  if (el) el.classList.add('active');
+  document.getElementById('topbar-title').textContent = TITLES[id] || '';
+  if (id === 'restaurants')  loadAllRestos();
+  if (id === 'paiements')    loadPaiements();
+  if (id === 'stats')        loadStats();
+  if (id === 'codes')        loadCodes();
+  if (id === 'plans')        loadPlans();
+  if (id === 'abonnements')  loadAbonnements();
+  if (id === 'avis')         loadAvis('en_attente');
+}
+
+// HELPER: close overlay
+function closeOverlay(btn) {
+  var el = btn;
+  while (el && !(el.style && el.style.position === 'fixed')) el = el.parentElement;
+  if (el) el.remove();
+}
+
+// OVERVIEW
+function loadOverview() {
+  supa('restaurants', '?select=*&order=created_at.desc').then(function(restos) {
+    if (!Array.isArray(restos)) { console.error('loadOverview: bad response', restos); return; }
+    ALL_RESTOS = Array.isArray(restos) ? restos : [];
+    var total   = ALL_RESTOS.length;
+    var actifs  = ALL_RESTOS.filter(function(r){return r.statut==='actif';}).length;
+    var attente = ALL_RESTOS.filter(function(r){return r.statut==='en_attente';}).length;
+    var vues    = ALL_RESTOS.reduce(function(s,r){return s+(r.nb_vues||0);}, 0);
+    var prixPlans = {premium:10500,pro:5000,starter:2500,gratuit:0};
+    var revenue = ALL_RESTOS.filter(function(r){return r.statut==='actif';}).reduce(function(s,r){return s+(prixPlans[r.plan]||0);},0);
+
+    document.getElementById('kpi-total').textContent = total;
+    document.getElementById('kpi-actif-sub').textContent = 'dont '+actifs+' actifs';
+    document.getElementById('kpi-attente').textContent = attente;
+    document.getElementById('kpi-revenue').textContent = revenue.toLocaleString('fr-FR');
+    document.getElementById('kpi-vues').textContent = vues.toLocaleString('fr-FR');
+    document.getElementById('badge-attente').textContent = attente;
+
+    // Restaurants en attente
+    var enAttente = ALL_RESTOS.filter(function(r){return r.statut==='en_attente';});
+    if (!enAttente.length) {
+      document.getElementById('tbody-attente').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Aucun restaurant en attente</td></tr>';
+    } else {
+      var html = '';
+      enAttente.forEach(function(r) {
+        html += '<tr>';
+        html += '<td><strong>'+r.nom+'</strong><br><span style="font-size:11px;color:var(--muted)">'+r.email+'</span></td>';
+        html += '<td>'+r.zone+'</td>';
+        html += '<td><span class="badge badge-'+r.plan+'">'+r.plan+'</span></td>';
+        html += '<td>'+new Date(r.created_at).toLocaleDateString('fr-FR')+'</td>';
+        html += '<td>';
+        html += '<button class="action-btn approve" data-rid="'+r.id+'" onclick="approuver(this.dataset.rid)">Approuver</button> ';
+        html += '<button class="action-btn view" data-rid="'+r.id+'" onclick="voirDetail(this.dataset.rid)">Detail</button>';
+        html += '</td></tr>';
+      });
+      document.getElementById('tbody-attente').innerHTML = html;
+    }
+
+    // Recents
+    var recHtml = '';
+    ALL_RESTOS.slice(0,8).forEach(function(r) {
+      recHtml += '<tr>';
+      recHtml += '<td><strong>'+r.nom+'</strong></td>';
+      recHtml += '<td>'+r.zone+'</td>';
+      recHtml += '<td><span class="badge badge-'+r.plan+'">'+r.plan+'</span></td>';
+      recHtml += '<td><span class="badge badge-'+r.statut+'">'+r.statut+'</span></td>';
+      recHtml += '<td>'+(r.nb_vues||0).toLocaleString('fr-FR')+'</td>';
+      recHtml += '</tr>';
+    });
+    document.getElementById('tbody-recent').innerHTML = recHtml;
+  });
+}
+
+// TOUS RESTAURANTS
+function loadAllRestos() {
+  supa('restaurants', '?select=*&order=created_at.desc').then(function(data) {
+    ALL_RESTOS = Array.isArray(data) ? data : [];
+    renderTable();
+  });
+}
+
+function renderTable() {
+  var arr = ALL_RESTOS.filter(function(r) {
+    var s = r.nom.toLowerCase()+(r.zone||'').toLowerCase()+(r.email||'').toLowerCase();
+    var matchS = !filterSearch || s.indexOf(filterSearch.toLowerCase()) !== -1;
+    var matchSt = !filterStatut || r.statut === filterStatut;
+    var matchP  = !filterPlan   || r.plan   === filterPlan;
+    return matchS && matchSt && matchP;
+  });
+  if (!arr.length) {
+    document.getElementById('tbody-all').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Aucun resultat</td></tr>';
+    return;
+  }
+  var html = '';
+  arr.forEach(function(r) {
+    html += '<tr>';
+    html += '<td><strong>'+r.nom+'</strong><br><span style="font-size:11px;color:var(--muted)">'+(r.telephone||'')+'</span></td>';
+    html += '<td>'+(r.zone||'')+'</td>';
+    html += '<td><span class="badge badge-'+r.plan+'">'+r.plan+'</span></td>';
+    html += '<td><span class="badge badge-'+r.statut+'">'+r.statut+'</span></td>';
+    html += '<td>'+(r.nb_vues||0).toLocaleString('fr-FR')+'</td>';
+    html += '<td>'+(r.nb_clics_gps||0).toLocaleString('fr-FR')+'</td>';
+    html += '<td>';
+    html += '<button class="action-btn view" data-rid="'+r.id+'" onclick="voirDetail(this.dataset.rid)">Detail</button> ';
+    if (r.statut==='en_attente') html += '<button class="action-btn approve" data-rid="'+r.id+'" onclick="approuver(this.dataset.rid)">OK</button> ';
+    if (r.statut==='actif') html += '<button class="action-btn suspend" data-rid="'+r.id+'" onclick="suspendre(this.dataset.rid)">Pause</button> ';
+    if (r.statut==='suspendu') html += '<button class="action-btn approve" data-rid="'+r.id+'" onclick="approuver(this.dataset.rid)">Reactiver</button> ';
+    html += '</td></tr>';
+  });
+  document.getElementById('tbody-all').innerHTML = html;
+}
+
+function filterTable(v)    { filterSearch = v; renderTable(); }
+function filterByStatut(v) { filterStatut = v; renderTable(); }
+function filterByPlan(v)   { filterPlan   = v; renderTable(); }
+
+// ACTIONS
+function approuver(id) {
+  supaPatch('restaurants', id, {statut:'actif', visible:true}).then(function(ok) {
+    if (ok) {
+      var r = ALL_RESTOS.find(function(x){return x.id===id;});
+      if (r) r.statut='actif';
+      showToast('Restaurant approuve!');
+      renderTable(); loadOverview();
+    }
+  });
+}
+
+function suspendre(id) {
+  if (!confirm('Suspendre ce restaurant ?')) return;
+  supaPatch('restaurants', id, {statut:'suspendu', visible:false}).then(function(ok) {
+    if (ok) {
+      var r = ALL_RESTOS.find(function(x){return x.id===id;});
+      if (r) { r.statut='suspendu'; r.visible=false; }
+      showToast('Restaurant suspendu', 'error');
+      renderTable(); loadOverview();
+    }
+  });
+}
+
+function changerPlan(id, plan) {
+  var prixPlans = {premium:10500,pro:5000,starter:2500,gratuit:0};
+  supaPatch('restaurants', id, {plan:plan}).then(function() {
+    if (prixPlans[plan]>0) {
+      fetch(SUPA_URL+"/rest/v1/paiements", {
+        method:'POST', headers:Object.assign({},HDR,{Prefer:'return=minimal'}),
+        body:JSON.stringify({restaurant_id:id,plan:plan,montant:prixPlans[plan],methode:'admin',statut:'confirme'})
+      });
+    }
+    var r = ALL_RESTOS.find(function(x){return x.id===id;});
+    if (r) r.plan=plan;
+    showToast('Plan mis a jour: '+plan);
+    document.getElementById('detail-overlay').classList.remove('open');
+    renderTable();
+  });
+}
+
+// DETAIL MODAL
+function voirDetail(id) {
+  var r = ALL_RESTOS.find(function(x){return x.id===id;});
+  if (!r) return;
+  document.getElementById('dm-title').textContent = r.nom;
+
+  var body = document.getElementById('dm-body');
+  body.innerHTML = '';
+
+  // Grid infos
+  var grid = document.createElement('div');
+  grid.className = 'dm-grid';
+  [
+    ['Zone', r.zone||''],
+    ['Statut', '<span class="badge badge-'+r.statut+'">'+r.statut+'</span>'],
+    ['Plan', '<span class="badge badge-'+r.plan+'">'+r.plan+'</span>'],
+    ['Inscrit le', new Date(r.created_at).toLocaleDateString('fr-FR')],
+    ['Telephone', r.telephone||''],
+    ['Email', r.email||''],
+    ['Vues totales', (r.nb_vues||0).toLocaleString('fr-FR')],
+    ['Clics GPS', (r.nb_clics_gps||0).toLocaleString('fr-FR')]
+  ].forEach(function(pair) {
+    var f = document.createElement('div'); f.className='dm-field';
+    f.innerHTML = '<div class="dm-label">'+pair[0]+'</div><div class="dm-val">'+pair[1]+'</div>';
+    grid.appendChild(f);
+  });
+  body.appendChild(grid);
+
+  // Adresse + description
+  var addr = document.createElement('div'); addr.className='dm-field'; addr.style.marginTop='8px';
+  addr.innerHTML = '<div class="dm-label">Adresse</div><div class="dm-val">'+(r.adresse||'--')+'</div>';
+  body.appendChild(addr);
+  var desc = document.createElement('div'); desc.className='dm-field';
+  desc.innerHTML = '<div class="dm-label">Description</div><div class="dm-val" style="color:var(--muted)">'+(r.description||'--')+'</div>';
+  body.appendChild(desc);
+
+  // Changer le plan
+  var planDiv = document.createElement('div');
+  planDiv.style.cssText = 'margin-top:20px;padding-top:16px;border-top:1px solid var(--border)';
+  var planLabel = document.createElement('div');
+  planLabel.className='dm-label'; planLabel.style.marginBottom='10px';
+  planLabel.textContent = 'Changer le plan';
+  planDiv.appendChild(planLabel);
+  var planBtns = document.createElement('div');
+  planBtns.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
+  ['gratuit','starter','pro','premium'].forEach(function(p) {
+    var btn = document.createElement('button');
+    btn.textContent = p;
+    btn.style.cssText = 'flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);font-family:var(--font-d);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;text-transform:uppercase;'+(p===r.plan?'background:var(--orange);color:white;':'background:var(--card2);color:var(--muted);');
+    (function(plan){btn.onclick=function(){changerPlan(r.id,plan);};})(p);
+    planBtns.appendChild(btn);
+  });
+  planDiv.appendChild(planBtns);
+  body.appendChild(planDiv);
+
+  // Actions
+  var actions = document.createElement('div');
+  actions.className = 'dm-actions';
+  if (r.statut==='en_attente'||r.statut==='suspendu') {
+    var bA = document.createElement('button'); bA.className='dm-btn approve'; bA.textContent='Approuver';
+    bA.onclick=function(){approuver(r.id);document.getElementById('detail-overlay').classList.remove('open');};
+    actions.appendChild(bA);
+  }
+  if (r.statut==='actif') {
+    var bS = document.createElement('button'); bS.className='dm-btn suspend'; bS.textContent='Suspendre';
+    bS.onclick=function(){suspendre(r.id);document.getElementById('detail-overlay').classList.remove('open');};
+    actions.appendChild(bS);
+  }
+  var bC = document.createElement('button'); bC.className='dm-btn cancel'; bC.textContent='Fermer';
+  bC.onclick=function(){document.getElementById('detail-overlay').classList.remove('open');};
+  actions.appendChild(bC);
+  body.appendChild(actions);
+
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function closeDetail(e) {
+  if (e.target===document.getElementById('detail-overlay'))
+    document.getElementById('detail-overlay').classList.remove('open');
+}
+
+// PAIEMENTS
+function loadPaiements() {
+  supa('paiements', '?select=*,restaurants(nom)&order=created_at.desc').then(function(data) {
+    ALL_PAYS = Array.isArray(data) ? data : [];
+    if (!ALL_PAYS.length) {
+      document.getElementById('tbody-pays').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Aucun paiement</td></tr>';
+      return;
+    }
+    var html = '';
+    ALL_PAYS.forEach(function(p) {
+      html += '<tr>';
+      html += '<td><strong>'+(p.restaurants?p.restaurants.nom:'--')+'</strong></td>';
+      html += '<td><span class="badge badge-'+p.plan+'">'+p.plan+'</span></td>';
+      html += '<td style="font-family:var(--font-d);font-weight:700;color:var(--green)">'+(p.montant||0).toLocaleString('fr-FR')+'F</td>';
+      html += '<td>'+(p.methode||'--')+'</td>';
+      html += '<td><span class="badge badge-actif">'+p.statut+'</span></td>';
+      html += '<td>'+new Date(p.created_at).toLocaleDateString('fr-FR')+'</td>';
+      html += '</tr>';
+    });
+    document.getElementById('tbody-pays').innerHTML = html;
+  });
+}
+
+// STATS
+var statsPeriod = 7;
+function setPeriodStats(btn, days) {
+  document.querySelectorAll('.period-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  statsPeriod = days;
+  loadStats();
+}
+
+function loadStats() {
+  if (!ALL_RESTOS.length) {
+    supa('restaurants','?select=*').then(function(d){ALL_RESTOS=Array.isArray(d)?d:[];renderStats();});
+  } else { renderStats(); }
+}
+
+function renderStats() {
+  var prixPlans = {premium:10500,pro:5000,starter:2500,gratuit:0};
+  var actifs = ALL_RESTOS.filter(function(r){return r.statut==='actif';});
+  var totalVues = actifs.reduce(function(s,r){return s+(r.nb_vues||0);},0);
+  var totalGps  = actifs.reduce(function(s,r){return s+(r.nb_clics_gps||0);},0);
+  var revenue   = actifs.reduce(function(s,r){return s+(prixPlans[r.plan]||0);},0);
+  document.getElementById('sk-vues').textContent   = totalVues.toLocaleString('fr-FR');
+  document.getElementById('sk-gps').textContent    = totalGps.toLocaleString('fr-FR');
+  document.getElementById('sk-rev').textContent    = revenue.toLocaleString('fr-FR')+'F';
+  document.getElementById('sk-actifs').textContent = actifs.length;
+  document.getElementById('sk-vues-sub').textContent = statsPeriod ? statsPeriod+' derniers jours' : 'toutes periodes';
+
+  // Top restos bars
+  var top8 = actifs.slice().sort(function(a,b){return (b.nb_vues||0)-(a.nb_vues||0);}).slice(0,8);
+  var maxV = Math.max.apply(null, top8.map(function(r){return r.nb_vues||0;}).concat([1]));
+  var colors = {premium:'var(--orange)',pro:'var(--gold)',starter:'var(--blue)',gratuit:'var(--muted)'};
+  var barsHtml = '';
+  top8.forEach(function(r,i) {
+    var pct = Math.round((r.nb_vues||0)/maxV*100);
+    var col = colors[r.plan]||'var(--muted)';
+    barsHtml += '<div style="display:flex;align-items:center;gap:10px;">';
+    barsHtml += '<div style="font-family:var(--font-d);font-size:13px;font-weight:800;color:'+(i<3?'var(--orange)':'var(--muted)')+';min-width:18px;text-align:right">'+(i+1)+'</div>';
+    barsHtml += '<div style="flex:1;min-width:0">';
+    barsHtml += '<div style="display:flex;justify-content:space-between;margin-bottom:4px;"><span style="font-size:12px;font-weight:500">'+r.nom+'</span><span style="font-size:11px;color:var(--muted)">'+r.zone+'</span></div>';
+    barsHtml += '<div style="height:8px;background:var(--card2);border-radius:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+col+';border-radius:4px;"></div></div>';
+    barsHtml += '</div>';
+    barsHtml += '<div style="font-family:var(--font-d);font-size:13px;font-weight:700;color:'+col+';min-width:40px;text-align:right">'+(r.nb_vues||0).toLocaleString('fr-FR')+'</div>';
+    barsHtml += '</div>';
+  });
+  document.getElementById('stats-bar-restos').innerHTML = barsHtml || '<div style="color:var(--muted);font-size:13px">Aucune vue</div>';
+
+  // Zones
+  var zoneMap = {};
+  actifs.forEach(function(r){
+    if (!r.zone) return;
+    if (!zoneMap[r.zone]) zoneMap[r.zone]={restos:0,vues:0};
+    zoneMap[r.zone].restos++;
+    zoneMap[r.zone].vues+=(r.nb_vues||0);
+  });
+  var zonesArr = Object.keys(zoneMap).map(function(z){return [z,zoneMap[z]];}).sort(function(a,b){return b[1].vues-a[1].vues;});
+  var maxZV = Math.max.apply(null, zonesArr.map(function(z){return z[1].vues;}).concat([1]));
+  var zColors = ['var(--orange)','var(--blue)','var(--green)','var(--gold)','#e879f9','#fb923c'];
+  var zHtml = '';
+  zonesArr.slice(0,8).forEach(function(z,i) {
+    var pct = Math.round(z[1].vues/maxZV*100);
+    zHtml += '<div>';
+    zHtml += '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">';
+    zHtml += '<div style="display:flex;align-items:center;gap:6px;"><div style="width:8px;height:8px;border-radius:50%;background:'+zColors[i%zColors.length]+';flex-shrink:0"></div><span style="font-size:12px;font-weight:500">'+z[0]+'</span></div>';
+    zHtml += '<span style="font-size:11px;color:var(--muted)">'+z[1].restos+' restos · '+z[1].vues+' vues</span>';
+    zHtml += '</div>';
+    zHtml += '<div style="height:6px;background:var(--card2);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+zColors[i%zColors.length]+';border-radius:3px;"></div></div>';
+    zHtml += '</div>';
+  });
+  document.getElementById('stats-zones').innerHTML = zHtml || '<div style="color:var(--muted);font-size:13px">Aucune zone</div>';
+
+  // Revenue + plans
+  var counts = {};
+  actifs.forEach(function(r){counts[r.plan]=(counts[r.plan]||0)+1;});
+  var total = actifs.length||1;
+  document.getElementById('rev-total').textContent = revenue.toLocaleString('fr-FR')+'F';
+  document.getElementById('rev-sub').textContent = actifs.length+' restaurants actifs';
+  var planColors = {premium:'var(--orange)',pro:'var(--gold)',starter:'var(--blue)',gratuit:'var(--muted)'};
+  var pbHtml = '';
+  Object.keys(counts).forEach(function(plan) {
+    var n=counts[plan]; var pct=Math.round(n/total*100); var col=planColors[plan]||'var(--muted)';
+    pbHtml += '<div class="plan-row"><div class="plan-dot" style="background:'+col+'"></div><div style="font-size:12px;color:var(--muted);min-width:60px">'+plan+'</div><div class="plan-bar-bg"><div class="plan-bar-fill" style="width:'+pct+'%;background:'+col+'"></div></div><div class="plan-count">'+n+'</div></div>';
+  });
+  document.getElementById('plan-breakdown').innerHTML = pbHtml;
+
+  var plHtml = '';
+  ['premium','pro','starter','gratuit'].forEach(function(plan) {
+    var n=counts[plan]||0; var rev=n*(prixPlans[plan]||0); var col=planColors[plan]||'var(--muted)';
+    plHtml += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">';
+    plHtml += '<div style="display:flex;align-items:center;gap:10px"><div style="width:10px;height:10px;border-radius:50%;background:'+col+'"></div><span class="badge badge-'+plan+'">'+plan+'</span></div>';
+    plHtml += '<div style="font-size:12px;color:var(--muted)">'+n+' resto'+(n>1?'s':'')+'</div>';
+    plHtml += '<div style="font-family:var(--font-d);font-size:13px;font-weight:700;color:'+col+'">'+rev.toLocaleString('fr-FR')+'F</div>';
+    plHtml += '</div>';
+  });
+  document.getElementById('plan-stats-list').innerHTML = plHtml;
+
+  // Top tableau
+  var topAll = ALL_RESTOS.slice().sort(function(a,b){return (b.nb_vues||0)-(a.nb_vues||0);}).slice(0,10);
+  var topHtml = '';
+  topAll.forEach(function(r,i) {
+    topHtml += '<tr>';
+    topHtml += '<td style="font-family:var(--font-d);font-weight:800;color:'+(i<3?'var(--orange)':'var(--muted)')+'">'+( i+1)+'</td>';
+    topHtml += '<td><strong>'+r.nom+'</strong></td>';
+    topHtml += '<td style="font-size:12px;color:var(--muted)">'+r.zone+'</td>';
+    topHtml += '<td><span class="badge badge-'+r.plan+'">'+r.plan+'</span></td>';
+    topHtml += '<td style="font-family:var(--font-d);font-weight:700">'+(r.nb_vues||0).toLocaleString('fr-FR')+'</td>';
+    topHtml += '<td>'+(r.nb_clics_gps||0).toLocaleString('fr-FR')+'</td>';
+    topHtml += '<td>'+(r.rating||0)+' &#11088;</td>';
+    topHtml += '</tr>';
+  });
+  document.getElementById('tbody-top').innerHTML = topHtml;
+}
+
+// CODES PROMO
+function loadCodes() {
+  document.getElementById('tbody-codes').innerHTML = '<tr class="loading-row"><td colspan="7"><span class="spinner"></span>Chargement...</td></tr>';
+  supa('codes_promo', '?order=created_at.desc').then(function(data) {
+    var codes = Array.isArray(data) ? data : [];
+    if (!codes.length) {
+      document.getElementById('tbody-codes').innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:28px;font-size:13px">Aucun code cree</td></tr>';
+      return;
+    }
+    var html = '';
+    codes.forEach(function(c) {
+      var redLabel = c.type==='percent' ? '-'+c.valeur+'%' : '-'+(c.valeur||0).toLocaleString('fr-FR')+'F';
+      var usage = (c.usage_count||0)+' / '+(c.usage_max?c.usage_max:'inf');
+      var expire = c.expire_le ? new Date(c.expire_le).toLocaleDateString('fr-FR') : 'Jamais';
+      var isExp = c.expire_le && new Date(c.expire_le)<new Date();
+      var isFull = c.usage_max && c.usage_count>=c.usage_max;
+      var badge = !c.actif ? '<span class="badge badge-suspendu">Desactive</span>' : isExp ? '<span class="badge badge-suspendu">Expire</span>' : isFull ? '<span class="badge badge-attente">Epuise</span>' : '<span class="badge badge-actif">Actif</span>';
+      var plans = (c.plans_valides||[]).map(function(p){return '<span class="badge badge-'+p+'" style="margin-right:3px">'+p+'</span>';}).join('');
+      html += '<tr>';
+      html += '<td><code style="background:var(--card2);color:var(--orange);padding:3px 10px;border-radius:6px;font-size:13px;font-weight:700;border:1px solid var(--border)">'+c.code+'</code><div style="font-size:11px;color:var(--muted);margin-top:3px;">'+(c.description||'')+'</div></td>';
+      html += '<td><strong style="color:var(--green)">'+redLabel+'</strong></td>';
+      html += '<td>'+plans+'</td>';
+      html += '<td style="font-family:var(--font-d);font-weight:700;">'+usage+'</td>';
+      html += '<td style="font-size:12px;color:'+(isExp?'var(--red)':'var(--muted)')+'">'+expire+'</td>';
+      html += '<td>'+badge+'</td>';
+      html += '<td>';
+      html += '<button class="action-btn '+(c.actif?'suspend':'approve')+'" data-cid="'+c.id+'" data-actif="'+(c.actif?'0':'1')+'" onclick="toggleCode(this.dataset.cid,this.dataset.actif===\'1\')">'+(c.actif?'Desactiver':'Activer')+'</button> ';
+      html += '<button class="action-btn view" data-cid="'+c.id+'" onclick="editCode(this.dataset.cid)">Modifier</button> ';
+      html += '<button class="action-btn" style="color:var(--red)" data-cid="'+c.id+'" onclick="deleteCode(this.dataset.cid)">Sup</button>';
+      html += '</td></tr>';
+    });
+    document.getElementById('tbody-codes').innerHTML = html;
+  });
+}
+
+function toggleCodeForm() {
+  var wrap = document.getElementById('code-form-wrap');
+  var btn  = document.getElementById('btn-toggle-form');
+  var open = wrap.style.display==='none';
+  wrap.style.display = open?'block':'none';
+  btn.textContent = open?'Annuler':'+ Nouveau code';
+}
+
+function updateCodePreview() {
+  var code = document.getElementById('new-code').value||'MONCODE';
+  var type = document.getElementById('new-type').value;
+  var val  = parseInt(document.getElementById('new-valeur').value)||0;
+  var prev = document.getElementById('code-preview');
+  var text = document.getElementById('code-preview-text');
+  if (!val){prev.style.display='none';return;}
+  var label = type==='percent'?('-'+val+'%'):('-'+val.toLocaleString('fr-FR')+'F');
+  text.innerHTML = 'Code <strong style="color:var(--orange)">'+code+'</strong> → reduction de <strong style="color:var(--green)">'+label+'</strong>';
+  prev.style.display='block';
+}
+
+function createCode() {
+  var code   = document.getElementById('new-code').value.trim();
+  var type   = document.getElementById('new-type').value;
+  var valeur = parseInt(document.getElementById('new-valeur').value);
+  var usage  = document.getElementById('new-usage').value;
+  var expire = document.getElementById('new-expire').value;
+  var desc   = document.getElementById('new-desc-code').value.trim();
+  var plans  = Array.from(document.querySelectorAll('#plans-checkboxes input:checked')).map(function(i){return i.value;});
+  if (!code||code.length<3){showToast('Code trop court','error');return;}
+  if (!valeur||valeur<1){showToast('Valeur invalide','error');return;}
+  if (type==='percent'&&valeur>100){showToast('Max 100%','error');return;}
+  if (!plans.length){showToast('Selectionne un plan','error');return;}
+  fetch(SUPA_URL+'/rest/v1/codes_promo', {
+    method:'POST',
+    headers:Object.assign({},HDR,{Prefer:'return=minimal'}),
+    body:JSON.stringify({code:code,type:type,valeur:valeur,plans_valides:plans,description:desc||null,usage_max:usage?parseInt(usage):null,expire_le:expire||null,actif:true,usage_count:0})
+  }).then(function(r) {
+    if (r.ok) {
+      showToast('Code "'+code+'" cree!');
+      toggleCodeForm();
+      ['new-code','new-valeur','new-usage','new-expire','new-desc-code'].forEach(function(id){document.getElementById(id).value='';});
+      document.getElementById('code-preview').style.display='none';
+      document.querySelectorAll('#plans-checkboxes input').forEach(function(i){i.checked=true;});
+      loadCodes();
+    } else { showToast('Erreur creation','error'); }
+  });
+}
+
+function toggleCode(id, actif) {
+  supaPatch('codes_promo', id, {actif:actif}).then(function(ok){
+    if(ok){showToast(actif?'Code active':'Code desactive');loadCodes();}
+  });
+}
+
+function deleteCode(id) {
+  if(!confirm('Supprimer ce code?'))return;
+  supaDelete('codes_promo',id).then(function(ok){
+    if(ok){showToast('Code supprime','error');loadCodes();}
+  });
+}
+
+// EDIT CODE
+var ALL_CODES = {};
+function editCode(id) {
+  supa('codes_promo','?id=eq.'+id).then(function(data) {
+    if(!Array.isArray(data)||!data.length){showToast('Introuvable','error');return;}
+    var c = data[0];
+    ALL_CODES[id] = c;
+    document.getElementById('edit-code-id').value = c.id;
+    document.getElementById('edit-code-label').textContent = c.code;
+    document.getElementById('edit-type').value = c.type||'percent';
+    document.getElementById('edit-valeur').value = c.valeur||'';
+    document.getElementById('edit-usage').value = c.usage_max||'';
+    document.getElementById('edit-expire').value = c.expire_le||'';
+    document.getElementById('edit-desc-code').value = c.description||'';
+    document.querySelectorAll('#edit-plans-checkboxes input').forEach(function(inp){
+      inp.checked = (c.plans_valides||[]).indexOf(inp.value)!==-1;
+    });
+    document.getElementById('edit-code-overlay').classList.add('open');
+  });
+}
+
+function saveCodeEdit() {
+  var id     = document.getElementById('edit-code-id').value;
+  var type   = document.getElementById('edit-type').value;
+  var valeur = parseInt(document.getElementById('edit-valeur').value);
+  var usage  = document.getElementById('edit-usage').value;
+  var expire = document.getElementById('edit-expire').value;
+  var desc   = document.getElementById('edit-desc-code').value.trim();
+  var plans  = Array.from(document.querySelectorAll('#edit-plans-checkboxes input:checked')).map(function(i){return i.value;});
+  if(!valeur||valeur<1){showToast('Valeur invalide','error');return;}
+  if(type==='percent'&&valeur>100){showToast('Max 100%','error');return;}
+  if(!plans.length){showToast('Selectionne un plan','error');return;}
+  supaPatch('codes_promo',id,{type:type,valeur:valeur,plans_valides:plans,usage_max:usage?parseInt(usage):null,expire_le:expire||null,description:desc||null}).then(function(ok){
+    if(ok){showToast('Code mis a jour!');document.getElementById('edit-code-overlay').classList.remove('open');loadCodes();}
+    else showToast('Erreur','error');
+  });
+}
+
+function closeEditCode(e) {
+  if(e.target===document.getElementById('edit-code-overlay'))
+    document.getElementById('edit-code-overlay').classList.remove('open');
+}
+
+// PLANS
+var ALL_PLANS = [];
+function loadPlans() {
+  supa('plans','?order=ordre').then(function(data) {
+    ALL_PLANS = Array.isArray(data)?data:[];
+    renderPlans();
+  });
+}
+
+function renderPlans() {
+  var container = document.getElementById('plans-list');
+  if(!ALL_PLANS.length){
+    container.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">Aucun plan. Execute le SQL de migration.</div>';
+    return;
+  }
+  var colors={gratuit:'var(--muted)',starter:'var(--blue)',pro:'var(--gold)',premium:'var(--orange)'};
+  var html='';
+  ALL_PLANS.forEach(function(p) {
+    var col=colors[p.code]||'var(--muted)';
+    html+='<div style="background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:20px;" id="plan-card-'+p.id+'">';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px;">';
+    html+='<div style="display:flex;align-items:center;gap:10px;"><div style="width:10px;height:10px;border-radius:50%;background:'+col+'"></div>';
+    html+='<div style="font-family:var(--font-d);font-size:16px;font-weight:800;">'+p.nom+'</div>';
+    html+='<span class="badge badge-'+p.code+'">'+p.code+'</span>';
+    html+=p.actif?'<span class="badge badge-actif">Actif</span>':'<span class="badge badge-suspendu">Inactif</span>';
+    html+='</div>';
+    html+='<div style="display:flex;gap:8px;">';
+    html+='<button class="action-btn view" data-pid="'+p.id+'" onclick="editPlan(this.dataset.pid)">Modifier</button>';
+    html+='<button class="action-btn '+(p.actif?'suspend':'approve')+'" data-pid="'+p.id+'" data-actif="'+(p.actif?'0':'1')+'" onclick="togglePlan(this.dataset.pid,this.dataset.actif===\'1\')">'+(p.actif?'Desactiver':'Activer')+'</button>';
+    html+='</div></div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;">';
+    [['Prix/mois',p.prix>0?p.prix.toLocaleString('fr-FR')+'F':'Gratuit'],['Max plats',p.max_plats>=999?'inf':p.max_plats],['Max promos',p.max_promos>=999?'inf':p.max_promos],['Photos',p.max_photos>=999?'inf':p.max_photos]].forEach(function(pair){
+      html+='<div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">'+pair[0]+'</div><div style="font-family:var(--font-d);font-size:18px;font-weight:800;color:'+col+'">'+pair[1]+'</div></div>';
+    });
+    html+='</div>';
+    html+='<div style="font-size:12px;color:var(--muted);font-style:italic;">'+(p.description||'')+'</div>';
+    html+='</div>';
+  });
+  container.innerHTML=html;
+}
+
+function editPlan(id) {
+  var p=ALL_PLANS.find(function(x){return x.id===id;});
+  if(!p)return;
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;';
+  var box=document.createElement('div');
+  box.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:20px;width:100%;max-width:540px;max-height:88vh;overflow-y:auto;padding:28px;';
+
+  var header=document.createElement('div');
+  header.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;';
+  header.innerHTML='<div style="font-family:var(--font-d);font-size:18px;font-weight:800;">Modifier '+p.nom+'</div>';
+  var closeBtn=document.createElement('button');
+  closeBtn.style.cssText='background:var(--card2);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;';
+  closeBtn.textContent='X';
+  closeBtn.onclick=function(){overlay.remove();};
+  header.appendChild(closeBtn);
+  box.appendChild(header);
+
+  var grid=document.createElement('div');
+  grid.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;';
+  [
+    {label:'Nom',id:'ep-nom',type:'text',val:p.nom||''},
+    {label:'Prix (F/mois)',id:'ep-prix',type:'number',val:p.prix||0},
+    {label:'Max plats',id:'ep-plats',type:'number',val:p.max_plats||3},
+    {label:'Max promos',id:'ep-promos',type:'number',val:p.max_promos||0},
+    {label:'Max photos',id:'ep-photos',type:'number',val:p.max_photos||0},
+    {label:'Ordre',id:'ep-ordre',type:'number',val:p.ordre||0}
+  ].forEach(function(f) {
+    var div=document.createElement('div');
+    div.innerHTML='<label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">'+f.label+'</label><input id="'+f.id+'" type="'+f.type+'" value="'+f.val+'" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 12px;border-radius:8px;outline:none;">';
+    grid.appendChild(div);
+  });
+  box.appendChild(grid);
+
+  var descDiv=document.createElement('div');
+  descDiv.style.marginBottom='12px';
+  descDiv.innerHTML='<label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Description</label><input id="ep-desc" type="text" value="'+(p.description||'')+'" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 12px;border-radius:8px;outline:none;">';
+  box.appendChild(descDiv);
+
+  var cbGrid=document.createElement('div');
+  cbGrid.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;';
+  [{label:'Menu',id:'ep-menu',val:p.has_menu},{label:'Stats',id:'ep-stats',val:p.has_stats},{label:'Badge',id:'ep-badge',val:p.has_badge},{label:'Priorite',id:'ep-priority',val:p.has_priority}].forEach(function(f){
+    var lbl=document.createElement('label');
+    lbl.style.cssText='display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:var(--card2);border:1px solid var(--border);padding:10px 12px;border-radius:8px;';
+    lbl.innerHTML='<input id="'+f.id+'" type="checkbox" '+(f.val?'checked':'')+' style="accent-color:var(--orange);width:15px;height:15px;">'+f.label;
+    cbGrid.appendChild(lbl);
+  });
+  box.appendChild(cbGrid);
+
+  var btns=document.createElement('div');
+  btns.style.cssText='display:flex;gap:10px;';
+  var saveBtn=document.createElement('button');
+  saveBtn.style.cssText='flex:1;background:var(--orange);color:white;border:none;font-family:var(--font-d);font-size:14px;font-weight:700;padding:12px;border-radius:10px;cursor:pointer;';
+  saveBtn.textContent='Sauvegarder';
+  saveBtn.onclick=(function(pid,ov){return function(){savePlan(pid,ov);};})(id,overlay);
+  var cancelBtn=document.createElement('button');
+  cancelBtn.style.cssText='background:var(--card2);border:1px solid var(--border);color:var(--muted);font-family:var(--font-b);font-size:13px;padding:12px 20px;border-radius:10px;cursor:pointer;';
+  cancelBtn.textContent='Annuler';
+  cancelBtn.onclick=function(){overlay.remove();};
+  btns.appendChild(saveBtn); btns.appendChild(cancelBtn);
+  box.appendChild(btns);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+function savePlan(id, overlay) {
+  var nom    = document.getElementById('ep-nom').value.trim();
+  var prix   = parseInt(document.getElementById('ep-prix').value)||0;
+  var plats  = parseInt(document.getElementById('ep-plats').value)||3;
+  var promos = parseInt(document.getElementById('ep-promos').value)||0;
+  var photos = parseInt(document.getElementById('ep-photos').value)||0;
+  var ordre  = parseInt(document.getElementById('ep-ordre').value)||0;
+  var desc   = document.getElementById('ep-desc').value.trim();
+  var menu   = document.getElementById('ep-menu').checked;
+  var stats  = document.getElementById('ep-stats').checked;
+  var badge  = document.getElementById('ep-badge').checked;
+  var prio   = document.getElementById('ep-priority').checked;
+  supaPatch('plans',id,{nom:nom,prix:prix,max_plats:plats,max_promos:promos,max_photos:photos,ordre:ordre,description:desc||null,has_menu:menu,has_stats:stats,has_badge:badge,has_priority:prio}).then(function(ok){
+    if(ok){showToast('Plan mis a jour!');overlay.remove();loadPlans();}
+    else showToast('Erreur','error');
+  });
+}
+
+function togglePlan(id,actif) {
+  supaPatch('plans',id,{actif:actif}).then(function(ok){
+    if(ok){showToast(actif?'Plan active':'Plan desactive');loadPlans();}
+  });
+}
+
+// ABONNEMENTS
+function loadAbonnements() {
+  supa('restaurants','?plan=neq.gratuit&select=*&order=abonnement_fin.asc').then(function(data) {
+    var restos=Array.isArray(data)?data:[];
+    var now=new Date();
+    var in10=new Date(now);in10.setDate(now.getDate()+10);
+    var expSoon=restos.filter(function(r){if(!r.abonnement_fin)return false;var f=new Date(r.abonnement_fin);return f>=now&&f<=in10;}).length;
+    var expired=restos.filter(function(r){if(!r.abonnement_fin)return false;return new Date(r.abonnement_fin)<now;}).length;
+    document.getElementById('kpi-expire-soon').textContent=expSoon;
+    document.getElementById('kpi-expired').textContent=expired;
+    document.getElementById('kpi-sub-actifs').textContent=restos.filter(function(r){return new Date(r.abonnement_fin||'9999')>=now;}).length;
+    supa('newsletter','?actif=eq.true&select=id').then(function(nl){document.getElementById('kpi-newsletter').textContent=Array.isArray(nl)?nl.length:'--';});
+    var html='';
+    if(!restos.length){
+      document.getElementById('tbody-abonnements').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Aucun abonnement payant</td></tr>';
+      return;
+    }
+    restos.forEach(function(r) {
+      var fin=r.abonnement_fin?new Date(r.abonnement_fin):null;
+      var jours=fin?Math.floor((fin-now)/(1000*60*60*24)):null;
+      var badge=!fin?'--':jours<0?'<span class="badge badge-suspendu">Expire</span>':jours<=10?'<span class="badge badge-attente">'+jours+'j restants</span>':'<span class="badge badge-actif">'+jours+'j restants</span>';
+      html+='<tr>';
+      html+='<td><strong>'+r.nom+'</strong><br><span style="font-size:11px;color:var(--muted)">'+r.email+'</span></td>';
+      html+='<td><span class="badge badge-'+r.plan+'">'+r.plan+'</span></td>';
+      html+='<td style="font-family:var(--font-d);font-weight:700;color:var(--orange)">'+(r.plan_prix_normal||0).toLocaleString('fr-FR')+'F</td>';
+      html+='<td style="font-size:12px">'+(r.abonnement_fin||'--')+'</td>';
+      html+='<td>'+badge+'</td>';
+      html+='<td><span class="badge badge-'+r.statut+'">'+r.statut+'</span></td>';
+      html+='<td>';
+      if(jours!==null&&jours<=10&&jours>=0) html+='<button class="action-btn view" data-email="'+r.email+'" onclick="alert(\'Rappel envoye a \'+this.dataset.email)">Rappeler</button> ';
+      if(jours!==null&&jours<0) html+='<button class="action-btn suspend" data-rid="'+r.id+'" onclick="downgradeManu(this.dataset.rid)">Downgrade</button>';
+      html+='</td></tr>';
+    });
+    document.getElementById('tbody-abonnements').innerHTML=html;
+  });
+}
+
+function downgradeManu(id) {
+  if(!confirm('Downgrader vers Gratuit?'))return;
+  supaPatch('restaurants',id,{plan:'gratuit',plan_prix_normal:0}).then(function(ok){
+    if(ok){showToast('Downgrade effectue');loadAbonnements();}
+  });
+}
+
+// AVIS
+var avisFilter='en_attente';
+function filterAvis(statut,btn) {
+  avisFilter=statut;
+  document.querySelectorAll('.avis-filter-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  loadAvis(statut);
+}
+function loadAvis(statut) {
+  var q=statut==='all'?'?select=*,restaurants(nom)&order=created_at.desc':'?statut=eq.'+statut+'&select=*,restaurants(nom)&order=created_at.desc';
+  supa('avis',q).then(function(data) {
+    var avis=Array.isArray(data)?data:[];
+    supa('avis','?select=statut,note').then(function(all){
+      if(Array.isArray(all)){
+        var att=all.filter(function(a){return a.statut==='en_attente';}).length;
+        var ok=all.filter(function(a){return a.statut==='approuve';}).length;
+        var rej=all.filter(function(a){return a.statut==='rejete';}).length;
+        var notes=all.map(function(a){return a.note||0;});
+        var moy=notes.length?(notes.reduce(function(s,n){return s+n;},0)/notes.length).toFixed(1):'--';
+        document.getElementById('kpi-avis-attente').textContent=att;
+        document.getElementById('kpi-avis-ok').textContent=ok;
+        document.getElementById('kpi-avis-rej').textContent=rej;
+        document.getElementById('kpi-avis-note').textContent=moy+' / 5';
+      }
+    });
+    if(!avis.length){
+      document.getElementById('tbody-avis').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px;font-size:13px">Aucun avis '+(statut==='en_attente'?'en attente':'trouve')+'</td></tr>';
+      return;
+    }
+    var stars=['','★','★★','★★★','★★★★','★★★★★'];
+    var html='';
+    avis.forEach(function(a) {
+      html+='<tr>';
+      html+='<td><strong>'+(a.restaurants?a.restaurants.nom:'--')+'</strong></td>';
+      html+='<td>'+a.auteur+'</td>';
+      html+='<td style="color:var(--gold)">'+(stars[a.note]||'--')+'</td>';
+      html+='<td style="font-size:12px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(a.commentaire||'--')+'</td>';
+      html+='<td style="font-size:11px;color:var(--muted)">'+new Date(a.created_at).toLocaleDateString('fr-FR')+'</td>';
+      html+='<td><span class="badge badge-'+(a.statut==='approuve'?'actif':a.statut==='rejete'?'suspendu':'attente')+'">'+a.statut+'</span></td>';
+      html+='<td>';
+      if(a.statut!=='approuve') html+='<button class="action-btn approve" data-aid="'+a.id+'" onclick="modererAvis(this.dataset.aid,\'approuve\')">Approuver</button> ';
+      if(a.statut!=='rejete')   html+='<button class="action-btn suspend" data-aid="'+a.id+'" onclick="modererAvis(this.dataset.aid,\'rejete\')">Rejeter</button>';
+      html+='</td></tr>';
+    });
+    document.getElementById('tbody-avis').innerHTML=html;
+  });
+}
+function modererAvis(id,statut) {
+  supaPatch('avis',id,{statut:statut,approuve:statut==='approuve'}).then(function(ok){
+    if(ok){showToast(statut==='approuve'?'Avis approuve!':'Avis rejete');loadAvis(avisFilter);}
+  });
+}
+
+// TOAST
+function showToast(msg,type) {
+  var t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type==='error'?' error':'');
+  setTimeout(function(){t.className='toast';},3000);
+}
+
+function refreshAll(){loadOverview();showToast('Actualise!');}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') document.getElementById('detail-overlay').classList.remove('open');
+});
+
+loadOverview();
+
+</script>
+</head>
+<body>
+
+<style>
+/* ── LOGIN SCREEN ── */
+.login-screen {
+  position: fixed; inset: 0; z-index: 999;
+  background: var(--black);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 0; padding: 24px;
+}
+.login-box {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 24px; padding: 40px 36px;
+  width: 100%; max-width: 400px;
+  animation: fadeIn .4s ease;
+}
+.login-logo {
+  font-family: var(--font-d); font-size: 24px; font-weight: 800;
+  letter-spacing: -.03em; text-align: center; margin-bottom: 6px;
+}
+.login-logo span { color: var(--red); }
+.login-badge {
+  text-align: center; font-size: 11px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 32px;
+  background: var(--red-dim); border: 1px solid rgba(248,113,113,.25);
+  padding: 5px 14px; border-radius: 100px;
+  display: inline-block; margin-left: 50%; transform: translateX(-50%);
+}
+.login-title {
+  font-family: var(--font-d); font-size: 20px; font-weight: 800;
+  text-align: center; margin-bottom: 6px;
+}
+.login-sub {
+  font-size: 13px; color: var(--muted); text-align: center;
+  margin-bottom: 28px; line-height: 1.5;
+}
+.login-field { margin-bottom: 14px; }
+.login-label {
+  font-size: 10px; font-weight: 600; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 6px; display: block;
+}
+.login-input {
+  width: 100%; background: var(--card2); border: 1px solid var(--border2);
+  color: var(--white); font-family: var(--font-b); font-size: 15px;
+  padding: 13px 16px; border-radius: 10px; outline: none;
+  transition: border-color .2s; letter-spacing: .05em;
+}
+.login-input:focus { border-color: var(--orange-border); }
+.login-input::placeholder { color: var(--muted); letter-spacing: 0; }
+.login-input.error { border-color: var(--red); animation: shake .3s ease; }
+.login-btn {
+  width: 100%; background: var(--orange); color: white; border: none;
+  font-family: var(--font-d); font-size: 15px; font-weight: 800;
+  padding: 14px; border-radius: 10px; cursor: pointer; margin-top: 4px;
+  transition: all .2s;
+}
+.login-btn:hover { opacity: .9; transform: translateY(-1px); }
+.login-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+.login-error {
+  background: var(--red-dim); border: 1px solid rgba(248,113,113,.3);
+  color: var(--red); font-size: 12px; padding: 10px 14px;
+  border-radius: 8px; margin-top: 12px; display: none; text-align: center;
+}
+.login-error.show { display: block; }
+.login-attempts {
+  font-size: 11px; color: var(--muted); text-align: center; margin-top: 10px;
+}
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 60%{transform:translateX(8px)}
+}
+</style>
+
+<script>
+// ── MOT DE PASSE ADMIN ──
+const ADMIN_PASS = "mangeici2025"; // ← Change ici ton mot de passe
+const SESSION_KEY = "mangeici_admin_auth";
+
+function checkAuth() { return sessionStorage.getItem(SESSION_KEY) === 'ok'; }
+
+function login() {
+  const pass = document.getElementById('login-pass').value;
+  const btn  = document.getElementById('login-btn');
+  const err  = document.getElementById('login-err');
+  const inp  = document.getElementById('login-pass');
+  const attempts = parseInt(sessionStorage.getItem('login_attempts')||'0');
+  if (attempts >= 5) {
+    err.textContent = '🔒 Trop de tentatives. Ferme et rouvre l\'onglet.';
+    err.classList.add('show'); return;
+  }
+  if (pass === ADMIN_PASS) {
+    sessionStorage.setItem(SESSION_KEY, 'ok');
+    sessionStorage.setItem('login_attempts', '0');
+    document.getElementById('login-screen').style.display = 'none';
+    document.body.style.overflow = '';
+    loadOverview();
+  } else {
+    const n = attempts + 1;
+    sessionStorage.setItem('login_attempts', n);
+    inp.classList.add('error');
+    err.textContent = `❌ Mot de passe incorrect. (${5-n} tentative${5-n>1?'s':''} restante${5-n>1?'s':''})`;
+    err.classList.add('show');
+    btn.disabled = true;
+    setTimeout(() => { inp.classList.remove('error'); btn.disabled = false; inp.value = ''; inp.focus(); }, 1500);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var inp = document.getElementById('login-pass');
+  if (inp) {
+    inp.addEventListener('keydown', function(e) { if(e.key==='Enter') login(); });
+    setTimeout(function(){ inp.focus(); }, 100);
+  }
+  var loginScreen = document.getElementById('login-screen');
+  if (!checkAuth()) {
+    if (loginScreen) { loginScreen.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  } else {
+    if (loginScreen) loginScreen.style.display = 'none';
+    loadOverview();
+  }
+});
+
+</script>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen" style="display:none;">
+  <div class="login-box">
+    <div class="login-logo">MANGE<span>ICI</span></div>
+    <div class="login-badge">🛡️ Accès Admin</div>
+    <div class="login-title">Panneau d'administration</div>
+    <div class="login-sub">Zone réservée. Entrez votre mot de passe pour accéder au panneau de contrôle.</div>
+    <div class="login-field">
+      <label class="login-label" for="login-pass">Mot de passe admin</label>
+      <input class="login-input" type="password" id="login-pass" placeholder="••••••••••••">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="login()">🔓 Accéder au panneau</button>
+    <div class="login-error" id="login-err"></div>
+    <div class="login-attempts">
+      Mot de passe par défaut : <code style="color:var(--orange);background:var(--card2);padding:2px 8px;border-radius:4px;">mangeici2025</code><br>
+      <span style="font-size:10px;color:var(--muted2);">Change-le dans le fichier (ligne ADMIN_PASS)</span>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a class="sb-logo" href="mangeici-mvp.html" target="_blank">
+    <div class="sb-logo-icon">🛡️</div>
+    <div class="sb-logo-text">MANGE<span>ICI</span></div>
+  </a>
+  <div class="admin-badge">🔴 Panneau Admin</div>
+  <nav class="sb-nav">
+    <div class="sb-section">Vue d'ensemble</div>
+    <a class="sb-item active" data-page="overview" onclick="showPage('overview',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Tableau de bord
+    </a>
+    <div class="sb-section">Gestion</div>
+    <a class="sb-item" data-page="restaurants" onclick="showPage('restaurants',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Restaurants
+      <span class="sb-badge" id="badge-attente">0</span>
+    </a>
+    <a class="sb-item" data-page="paiements" onclick="showPage('paiements',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      Paiements
+    </a>
+    <a class="sb-item" data-page="codes" onclick="showPage('codes',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Codes promo
+    </a>
+    <a class="sb-item" data-page="avis" onclick="showPage('avis',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Avis clients
+    </a>
+    <a class="sb-item" data-page="plans" onclick="showPage('plans',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="18"/><rect x="9" y="8" width="6" height="13"/><rect x="16" y="13" width="6" height="8"/></svg>
+      Plans d'abonnement
+    </a>
+    <a class="sb-item" data-page="abonnements" onclick="showPage('abonnements',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Abonnements
+    </a>
+    <a class="sb-item" data-page="stats" onclick="showPage('stats',this)">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Revenus & Stats
+    </a>
+    <div class="sb-section">Accès</div>
+    <a class="sb-item" href="mangeici-mvp.html" target="_blank">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Voir le site public
+    </a>
+  </nav>
+  <div class="sb-footer">
+    <a class="sb-item" href="mangeici-mvp.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Déconnexion
+    </a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Tableau de bord</div>
+    <div class="topbar-right">
+      <button class="tb-btn" onclick="refreshAll()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Actualiser
+      </button>
+      <div class="admin-avatar">A</div>
+    </div>
+  </div>
+
+  <!-- ══ OVERVIEW ══ -->
+  <div class="page active" id="page-overview">
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">Total restaurants</div><div class="kpi-icon" style="background:var(--orange-dim)">🏪</div></div>
+        <div class="kpi-val" id="kpi-total">—</div>
+        <div class="kpi-sub" id="kpi-actif-sub">dont — actifs</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">En attente validation</div><div class="kpi-icon" style="background:rgba(250,204,21,.1)">⏳</div></div>
+        <div class="kpi-val" style="color:var(--gold)" id="kpi-attente">—</div>
+        <div class="kpi-sub">À valider</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">Revenus ce mois</div><div class="kpi-icon" style="background:var(--green-dim)">💰</div></div>
+        <div class="kpi-val" style="color:var(--green)" id="kpi-revenue">—</div>
+        <div class="kpi-sub">F CFA</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">Vues totales site</div><div class="kpi-icon" style="background:rgba(96,165,250,.1)">👁️</div></div>
+        <div class="kpi-val" style="color:var(--blue)" id="kpi-vues">—</div>
+        <div class="kpi-sub">Toutes fiches</div>
+      </div>
+    </div>
+
+    <!-- Restos en attente -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">⏳ Restaurants en attente de validation</div>
+      </div>
+      <table>
+        <thead><tr><th>Restaurant</th><th>Zone</th><th>Plan</th><th>Inscrit le</th><th>Actions</th></tr></thead>
+        <tbody id="tbody-attente"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Chargement…</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- Derniers inscrits -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">🆕 Dernières inscriptions</div>
+      </div>
+      <table>
+        <thead><tr><th>Restaurant</th><th>Zone</th><th>Plan</th><th>Statut</th><th>Vues</th></tr></thead>
+        <tbody id="tbody-recent"><tr class="loading-row"><td colspan="5"><span class="spinner"></span>Chargement…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ RESTAURANTS ══ -->
+  <div class="page" id="page-restaurants">
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">Tous les restaurants</div>
+        <div class="table-actions">
+          <input class="t-search" type="text" placeholder="Rechercher…" oninput="filterTable(this.value)">
+          <select class="t-filter" onchange="filterByStatut(this.value)">
+            <option value="">Tous statuts</option>
+            <option value="actif">Actifs</option>
+            <option value="en_attente">En attente</option>
+            <option value="suspendu">Suspendus</option>
+          </select>
+          <select class="t-filter" onchange="filterByPlan(this.value)">
+            <option value="">Tous plans</option>
+            <option value="premium">Premium</option>
+            <option value="pro">Pro</option>
+            <option value="starter">Starter</option>
+            <option value="gratuit">Gratuit</option>
+          </select>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Restaurant</th><th>Zone</th><th>Plan</th><th>Statut</th><th>Vues</th><th>GPS clics</th><th>Actions</th></tr></thead>
+        <tbody id="tbody-all"><tr class="loading-row"><td colspan="7"><span class="spinner"></span>Chargement…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ PAIEMENTS ══ -->
+  <div class="page" id="page-paiements">
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">Historique des paiements</div>
+      </div>
+      <table>
+        <thead><tr><th>Restaurant</th><th>Plan</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Date</th></tr></thead>
+        <tbody id="tbody-pays"><tr class="loading-row"><td colspan="6"><span class="spinner"></span>Chargement…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ STATS ══ -->
+  <div class="page" id="page-stats">
+
+    <!-- Sélecteur de période -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+      <div style="font-family:var(--font-d);font-size:16px;font-weight:800;">Statistiques & Revenus</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="tb-btn period-btn active" data-period="7"  onclick="setPeriodStats(this,7)">7 jours</button>
+        <button class="tb-btn period-btn"        data-period="30" onclick="setPeriodStats(this,30)">30 jours</button>
+        <button class="tb-btn period-btn"        data-period="90" onclick="setPeriodStats(this,90)">90 jours</button>
+        <button class="tb-btn period-btn"        data-period="0"  onclick="setPeriodStats(this,0)">Tout</button>
+      </div>
+    </div>
+
+    <!-- KPIs vues -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;" id="stats-kpis">
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">Vues totales</div><div class="kpi-icon" style="background:var(--blue-dim)">👁️</div></div><div class="kpi-val" style="color:var(--blue)" id="sk-vues">—</div><div class="kpi-sub" id="sk-vues-sub">sur la période</div></div>
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">Clics GPS</div><div class="kpi-icon" style="background:var(--green-dim)">📍</div></div><div class="kpi-val" style="color:var(--green)" id="sk-gps">—</div><div class="kpi-sub">redirections Maps</div></div>
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">Revenus estimés</div><div class="kpi-icon" style="background:var(--orange-dim)">💰</div></div><div class="kpi-val" style="color:var(--orange)" id="sk-rev">—</div><div class="kpi-sub">plans payants actifs</div></div>
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">Restaurants actifs</div><div class="kpi-icon" style="background:var(--gold-dim)">🏪</div></div><div class="kpi-val" style="color:var(--gold)" id="sk-actifs">—</div><div class="kpi-sub">plan gratuit inclus</div></div>
+    </div>
+
+    <!-- Graphique barres vues + Zones -->
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px;">
+
+      <!-- Barres vues par jour -->
+      <div class="stat-card">
+        <div class="stat-card-title">📈 Vues par restaurant (top 8 sur la période)</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;" id="stats-bar-restos"></div>
+      </div>
+
+      <!-- Zones breakdown -->
+      <div class="stat-card">
+        <div class="stat-card-title">📍 Répartition par zone</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;" id="stats-zones"></div>
+      </div>
+    </div>
+
+    <!-- Revenus + Top restos -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-card-title">💰 Revenus mensuels estimés</div>
+        <div class="revenue-big" id="rev-total">0F</div>
+        <div class="revenue-sub" id="rev-sub">basé sur les plans actifs</div>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+          <div style="font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px">Par plan</div>
+          <div class="plan-breakdown" id="plan-breakdown"></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-title">📊 Répartition des abonnements</div>
+        <div id="plan-stats-list" style="display:flex;flex-direction:column;gap:14px;margin-top:4px;"></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-head"><div class="table-title">🏆 Top restaurants par vues (toutes périodes)</div></div>
+      <table>
+        <thead><tr><th>#</th><th>Restaurant</th><th>Zone</th><th>Plan</th><th>Vues</th><th>Clics GPS</th><th>Note</th></tr></thead>
+        <tbody id="tbody-top"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ CODES PROMO ══ -->
+  <div class="page" id="page-codes">
+    <!-- Formulaire création -->
+    <div class="table-card" style="margin-bottom:16px;">
+      <div class="table-head">
+        <div class="table-title">➕ Créer un nouveau code</div>
+        <button class="tb-btn" onclick="toggleCodeForm()" id="btn-toggle-form">
+          + Nouveau code
+        </button>
+      </div>
+      <div id="code-form-wrap" style="display:none;padding:20px;border-top:1px solid var(--border);">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Code *</label>
+            <input id="new-code" type="text" placeholder="Ex: LAUNCH50" maxlength="20"
+              style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;text-transform:uppercase;"
+              oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'')">
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Type de réduction</label>
+            <select id="new-type" onchange="updateCodePreview()"
+              style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;appearance:none;">
+              <option value="percent">Pourcentage (%)</option>
+              <option value="fixed">Montant fixe (F CFA)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Valeur *</label>
+            <input id="new-valeur" type="number" placeholder="Ex: 50 ou 2500" min="1"
+              style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;"
+              oninput="updateCodePreview()">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Usages max (vide=illimité)</label>
+            <input id="new-usage" type="number" placeholder="Ex: 50" min="1"
+              style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Expire le (vide=jamais)</label>
+            <input id="new-expire" type="date"
+              style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;">
+          </div>
+          <div>
+            <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Plans concernés</label>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;" id="plans-checkboxes">
+              <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox" value="starter" checked style="accent-color:var(--orange)"> Starter</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox" value="pro" checked style="accent-color:var(--orange)"> Pro</label>
+              <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox" value="premium" checked style="accent-color:var(--orange)"> Premium</label>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Description</label>
+          <input id="new-desc-code" type="text" placeholder="Ex: Code lancement — offert aux 100 premiers restos"
+            style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;">
+        </div>
+        <!-- Prévisualisation -->
+        <div id="code-preview" style="background:var(--orange-dim);border:1px solid var(--orange-border);border-radius:10px;padding:12px 16px;margin-bottom:14px;font-size:13px;display:none;">
+          <span id="code-preview-text"></span>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="createCode()"
+            style="background:var(--orange);color:white;border:none;font-family:var(--font-d);font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;cursor:pointer;transition:all .2s;">
+            ✓ Créer le code
+          </button>
+          <button onclick="toggleCodeForm()"
+            style="background:var(--card2);border:1px solid var(--border);color:var(--muted);font-family:var(--font-b);font-size:13px;padding:10px 18px;border-radius:8px;cursor:pointer;">
+            Annuler
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des codes -->
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">🎟️ Tous les codes de réduction</div>
+        <button class="tb-btn" onclick="loadCodes()">↻ Actualiser</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Réduction</th>
+            <th>Plans</th>
+            <th>Usages</th>
+            <th>Expire le</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-codes">
+          <tr class="loading-row"><td colspan="7"><span class="spinner"></span>Chargement…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ AVIS CLIENTS ══ -->
+  <div class="page" id="page-avis">
+    <div class="kpi-grid" style="margin-bottom:20px;">
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">En attente</div><div class="kpi-icon" style="background:rgba(250,204,21,.1)">⏳</div></div><div class="kpi-val" style="color:var(--gold)" id="kpi-avis-attente">—</div><div class="kpi-sub">À modérer</div></div>
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">Approuvés</div><div class="kpi-icon" style="background:var(--green-dim)">✅</div></div><div class="kpi-val" style="color:var(--green)" id="kpi-avis-ok">—</div><div class="kpi-sub">Publiés</div></div>
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">Rejetés</div><div class="kpi-icon" style="background:var(--red-dim)">❌</div></div><div class="kpi-val" style="color:var(--red)" id="kpi-avis-rej">—</div><div class="kpi-sub">Supprimés</div></div>
+      <div class="kpi"><div class="kpi-top"><div class="kpi-label">Note moy.</div><div class="kpi-icon" style="background:rgba(250,204,21,.1)">⭐</div></div><div class="kpi-val" style="color:var(--gold)" id="kpi-avis-note">—</div><div class="kpi-sub">Tous avis</div></div>
+    </div>
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">⭐ Modération des avis</div>
+        <div style="display:flex;gap:6px;">
+          <button class="tb-btn avis-filter-btn active" onclick="filterAvis('en_attente',this)">⏳ En attente</button>
+          <button class="tb-btn avis-filter-btn" onclick="filterAvis('approuve',this)">✅ Approuvés</button>
+          <button class="tb-btn avis-filter-btn" onclick="filterAvis('all',this)">Tous</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Restaurant</th><th>Auteur</th><th>Note</th><th>Commentaire</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+        <tbody id="tbody-avis"><tr class="loading-row"><td colspan="7"><span class="spinner"></span>Chargement…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ PLANS ══ -->
+  <div class="page" id="page-plans">
+    <div class="table-card" style="margin-bottom:16px;">
+      <div class="table-head">
+        <div class="table-title">💳 Plans d'abonnement</div>
+        <div style="font-size:12px;color:var(--muted)">Modifie les prix et fonctionnalités de chaque plan</div>
+      </div>
+      <div id="plans-list" style="padding:20px;display:flex;flex-direction:column;gap:14px;">
+        <div style="text-align:center;color:var(--muted);padding:20px"><span class="spinner"></span> Chargement…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ABONNEMENTS ══ -->
+  <div class="page" id="page-abonnements">
+    <div class="kpi-grid" style="margin-bottom:20px;">
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">Expirent dans 10j</div><div class="kpi-icon" style="background:rgba(250,204,21,.1)">⏰</div></div>
+        <div class="kpi-val" style="color:var(--gold)" id="kpi-expire-soon">—</div>
+        <div class="kpi-sub">À rappeler</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">Expirés non renouvelés</div><div class="kpi-icon" style="background:var(--red-dim)">❌</div></div>
+        <div class="kpi-val" style="color:var(--red)" id="kpi-expired">—</div>
+        <div class="kpi-sub">Seront downgradés</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">Abonnés actifs</div><div class="kpi-icon" style="background:var(--green-dim)">✅</div></div>
+        <div class="kpi-val" style="color:var(--green)" id="kpi-sub-actifs">—</div>
+        <div class="kpi-sub">Plans payants</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-top"><div class="kpi-label">Newsletter inscrits</div><div class="kpi-icon" style="background:var(--blue-dim)">📬</div></div>
+        <div class="kpi-val" style="color:var(--blue)" id="kpi-newsletter">—</div>
+        <div class="kpi-sub">Emails collectés</div>
+      </div>
+    </div>
+    <div class="table-card">
+      <div class="table-head">
+        <div class="table-title">⏳ Suivi des abonnements payants</div>
+        <button class="tb-btn" onclick="loadAbonnements()">↻ Actualiser</button>
+      </div>
+      <table>
+        <thead><tr><th>Restaurant</th><th>Plan</th><th>Prix normal</th><th>Fin abonnement</th><th>Jours restants</th><th>Statut</th><th>Action</th></tr></thead>
+        <tbody id="tbody-abonnements"><tr class="loading-row"><td colspan="7"><span class="spinner"></span>Chargement…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- DETAIL MODAL -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-modal">
+    <div class="dm-head">
+      <div class="dm-title" id="dm-title">Détail restaurant</div>
+      <button class="dm-close" onclick="document.getElementById('detail-overlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="dm-body" id="dm-body"></div>
+  </div>
+</div>
+
+<!-- MODAL EDIT CODE PROMO -->
+<div class="detail-overlay" id="edit-code-overlay" onclick="closeEditCode(event)">
+  <div class="detail-modal" style="max-width:500px;">
+    <div class="dm-head">
+      <div class="dm-title">✏️ Modifier le code <span id="edit-code-label" style="color:var(--orange)"></span></div>
+      <button class="dm-close" onclick="document.getElementById('edit-code-overlay').classList.remove('open')">✕</button>
+    </div>
+    <div class="dm-body">
+      <input type="hidden" id="edit-code-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Type</label>
+          <select id="edit-type"
+            style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;appearance:none;">
+            <option value="percent">Pourcentage (%)</option>
+            <option value="fixed">Montant fixe (F CFA)</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Valeur *</label>
+          <input id="edit-valeur" type="number" min="1"
+            style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Usages max (vide=illimité)</label>
+          <input id="edit-usage" type="number" min="1"
+            style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;">
+        </div>
+        <div>
+          <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Expire le (vide=jamais)</label>
+          <input id="edit-expire" type="date"
+            style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;">
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:5px;">Description</label>
+        <input id="edit-desc-code" type="text"
+          style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:13px;padding:10px 14px;border-radius:8px;outline:none;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:8px;">Plans concernés</label>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;" id="edit-plans-checkboxes">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="starter" style="accent-color:var(--orange);width:15px;height:15px;"> Starter</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="pro" style="accent-color:var(--orange);width:15px;height:15px;"> Pro</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="checkbox" value="premium" style="accent-color:var(--orange);width:15px;height:15px;"> Premium</label>
+        </div>
+      </div>
+      <div class="dm-actions">
+        <button class="dm-btn approve" onclick="saveCodeEdit()">✓ Sauvegarder</button>
+        <button class="dm-btn cancel" onclick="document.getElementById('edit-code-overlay').classList.remove('open')">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+
+</body>
+</html>

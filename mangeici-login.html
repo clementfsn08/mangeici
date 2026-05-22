@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MANGEICI — Connexion restaurateur</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--orange:#FF5A1F;--orange-dim:rgba(255,90,31,.14);--orange-border:rgba(255,90,31,.3);--gold:#E8B84B;--black:#080808;--card:#141414;--card2:#1C1C1C;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);--white:#F5EFE6;--muted:rgba(245,239,230,.42);--muted2:rgba(245,239,230,.16);--green:#4ADE80;--green-dim:rgba(74,222,128,.1);--green-border:rgba(74,222,128,.25);--red:#F87171;--red-dim:rgba(248,113,113,.1);--red-border:rgba(248,113,113,.25);--font-d:"Clash Display","Syne",sans-serif;--font-b:"Cabinet Grotesk","DM Sans",sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--black);color:var(--white);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow:hidden}
+body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px 200px;pointer-events:none;z-index:9999;opacity:.35}
+/* Orbs */
+body::after{content:"";position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(255,90,31,.1) 0%,transparent 70%);top:-200px;left:-200px;pointer-events:none;animation:drift 16s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(80px,60px)}}
+.orb2{position:fixed;width:400px;height:400px;background:radial-gradient(circle,rgba(232,184,75,.07) 0%,transparent 70%);bottom:-100px;right:-100px;pointer-events:none;animation:drift2 12s ease-in-out infinite alternate}
+@keyframes drift2{from{transform:translate(0,0)}to{transform:translate(-50px,-40px)}}
+
+/* Card */
+.login-card{width:100%;max-width:440px;background:var(--card);border:1px solid var(--border2);border-radius:24px;padding:40px;position:relative;z-index:2;box-shadow:0 40px 100px rgba(0,0,0,.6);animation:fadeUp .5s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:24px 24px 0 0;opacity:.7}
+
+/* Logo */
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px;text-decoration:none;color:var(--white)}
+.logo-mark{width:36px;height:36px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 4px 16px rgba(255,90,31,.4)}
+.logo-text{font-family:var(--font-d);font-size:22px;font-weight:700;letter-spacing:-.03em}
+.logo-text em{color:var(--orange);font-style:normal}
+
+/* Tabs */
+.tabs{display:flex;background:var(--card2);border-radius:100px;padding:4px;gap:0;margin-bottom:24px}
+.tab{flex:1;padding:9px 16px;border-radius:100px;font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .25s;text-align:center;border:none;background:none}
+.tab.active{background:var(--orange);color:white;box-shadow:0 4px 14px rgba(255,90,31,.3)}
+
+/* Form panels */
+.panel{display:none}.panel.active{display:block}
+
+/* Fields */
+.field{margin-bottom:15px}
+.field label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:6px}
+.field input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:14px;padding:12px 16px;border-radius:10px;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--orange-border);box-shadow:0 0 0 3px rgba(255,90,31,.1)}
+.field input::placeholder{color:var(--muted2);font-style:italic}
+
+/* Button */
+.btn{width:100%;background:var(--orange);color:white;border:none;font-family:var(--font-d);font-size:14px;font-weight:700;padding:14px;border-radius:100px;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(255,90,31,.3);letter-spacing:.01em}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(255,90,31,.45)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--font-b);font-size:14px;padding:12px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:8px}
+.btn-ghost:hover{color:var(--white);border-color:var(--border)}
+
+/* Messages */
+.msg{padding:12px 16px;border-radius:10px;font-size:13px;margin:12px 0;display:none;line-height:1.5}
+.msg.ok{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);display:block}
+.msg.ko{background:var(--red-dim);border:1px solid var(--red-border);color:var(--red);display:block}
+
+/* New password form */
+#new-pass-section{display:none}
+
+/* Reset link */
+.forgot{font-size:12px;color:var(--muted);text-align:right;margin-top:6px;cursor:pointer;transition:color .2s;text-decoration:underline;text-underline-offset:2px}
+.forgot:hover{color:var(--orange)}
+
+/* Bottom link */
+.bottom-link{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.bottom-link a{color:var(--orange);text-decoration:none;font-weight:600}
+.bottom-link a:hover{text-decoration:underline}
+
+/* Nav back */
+.nav-back{position:fixed;top:20px;left:24px;font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;z-index:10;display:flex;align-items:center;gap:5px}
+.nav-back:hover{color:var(--white)}
+</style>
+</head>
+<body>
+<div class="orb2"></div>
+<a class="nav-back" href="mangeici-mvp.html">← Retour au site</a>
+
+<div class="login-card">
+  <a class="logo" href="mangeici-mvp.html">
+    <div class="logo-mark">🍽️</div>
+    <div class="logo-text">MANGE<em>ICI</em></div>
+  </a>
+
+  <div id="new-pass-section">
+    <div style="font-family:var(--font-d);font-size:18px;font-weight:700;margin-bottom:6px;">🔑 Nouveau mot de passe</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Choisis un nouveau mot de passe sécurisé.</div>
+    <div class="field"><label>Nouveau mot de passe</label><input type="password" id="new-pass" placeholder="8 caractères min"></div>
+    <div class="field"><label>Confirmer</label><input type="password" id="new-pass2" placeholder="Même mot de passe"></div>
+    <div class="msg" id="new-pass-msg"></div>
+    <button class="btn" id="btn-new-pass" onclick="updatePassword()">✓ Mettre à jour</button>
+  </div>
+
+  <div id="main-section">
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="switchTab('login')">Se connecter</button>
+      <button class="tab" id="tab-reset" onclick="switchTab('reset')">Mot de passe oublié</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="panel active" id="panel-login">
+      <div class="msg" id="login-msg"></div>
+      <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="ton@email.com"></div>
+      <div class="field">
+        <label>Mot de passe</label>
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+        <div class="forgot" onclick="switchTab('reset')">Mot de passe oublié ?</div>
+      </div>
+      <button class="btn" id="btn-login" onclick="doLogin()">Se connecter →</button>
+      <button class="btn-ghost" onclick="location.href='mangeici-inscription.html'">Pas encore inscrit ? Créer un compte</button>
+    </div>
+
+    <!-- RESET -->
+    <div class="panel" id="panel-reset">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">Entre ton email pour recevoir un lien de réinitialisation de mot de passe.</div>
+      <div class="msg" id="reset-msg"></div>
+      <div class="field"><label>Email</label><input type="email" id="reset-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')doReset()"></div>
+      <button class="btn" id="btn-reset" onclick="doReset()">📧 Envoyer le lien</button>
+      <button class="btn-ghost" onclick="switchTab('login')">← Retour à la connexion</button>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-link">
+  Nouveau restaurant ? <a href="mangeici-inscription.html">Inscrire mon resto →</a>
+</div>
+
+<script>
+
+const SUPA_URL = "https://ldcweouzknksuudvroqu.supabase.co";
+const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3dlb3V6a25rc3V1ZHZyb3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA0NjAsImV4cCI6MjA5MTY3NjQ2MH0.vyCqou8IAugFszrizK0eVRu3G2HylNKZmEp8vn0oKoE";
+
+const { createClient } = supabase;
+const db = createClient(SUPA_URL, SUPA_KEY);
+
+// Rediriger si déjà connecté
+db.auth.getSession().then(({ data: { session } }) => {
+  if (session) window.location.href = 'mangeici-dashboard.html';
+});
+
+function showTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('tab-reset').style.display = tab === 'reset' ? 'block' : 'none';
+}
+
+function showMsg(id, type, text) {
+  const el = document.getElementById(id);
+  el.className = `msg ${type}`;
+  el.textContent = text;
+  el.style.display = 'block';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-password').value;
+  const btn   = document.getElementById('btn-login');
+
+  if (!email || !pass) { showMsg('login-msg','ko','⚠️ Remplis les deux champs.'); return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Connexion…';
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pass });
+
+  if (error) {
+    btn.disabled = false; btn.textContent = '🔓 Accéder à mon dashboard';
+    const msg = error.message.includes('Invalid') ? '❌ Email ou mot de passe incorrect.' : '❌ ' + error.message;
+    showMsg('login-msg', 'ko', msg);
+    return;
+  }
+
+  showMsg('login-msg', 'ok', '✅ Connexion réussie ! Redirection…');
+  setTimeout(() => window.location.href = 'mangeici-dashboard.html', 800);
+}
+
+async function doReset() {
+  const email = document.getElementById('reset-email').value.trim();
+  const btn   = document.getElementById('btn-reset');
+
+  if (!email) { showMsg('reset-msg','ko','⚠️ Entre ton email.'); return; }
+
+  btn.disabled = true; btn.textContent = '⏳ Envoi…';
+
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/mangeici-login.html'
+  });
+
+  btn.disabled = false; btn.textContent = '📧 Envoyer le lien';
+
+  if (error) { showMsg('reset-msg','ko','❌ ' + error.message); return; }
+  showMsg('reset-msg','ok','✅ Email envoyé ! Vérifie ta boîte mail (et les spams).');
+}
+
+// Détecter le retour depuis le lien de réinitialisation du mot de passe
+(function() {
+  // Supabase envoie les params dans le HASH (#) OU en query string (?)
+  var hash   = window.location.hash.substring(1);
+  var search = window.location.search.substring(1);
+  var raw    = hash || search;
+
+  var params = {};
+  raw.split('&').forEach(function(part) {
+    var kv = part.split('=');
+    if (kv[0]) params[kv[0]] = decodeURIComponent((kv[1] || '').replace(/\+/g,' '));
+  });
+
+  // Réinitialisation mot de passe
+  if (params.type === 'recovery' && params.access_token) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showNewPasswordForm(params.access_token);
+    return;
+  }
+
+  // Confirmation d'email signup
+  if (params.type === 'signup' || params.type === 'magiclink') {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showMsg('login-msg', 'ok', '✅ Email confirmé ! Vous pouvez vous connecter maintenant.');
+    return;
+  }
+
+  // Fallback: hash contains access_token (older Supabase format)
+  if (window.location.hash.includes('access_token')) {
+    var hashParams = {};
+    window.location.hash.substring(1).split('&').forEach(function(p){
+      var kv=p.split('='); hashParams[kv[0]]=decodeURIComponent(kv[1]||'');
+    });
+    if (hashParams.type === 'recovery') {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showNewPasswordForm(hashParams.access_token);
+    }
+  }
+})();
+
+var _resetToken = null;
+
+function saveNewPasswordFromForm() {
+  saveNewPassword(_resetToken);
+}
+
+function showNewPasswordForm(token) {
+  _resetToken = token;
+  // Cacher le formulaire de login
+  var loginBox = document.querySelector('.login-box') || document.querySelector('form') || document.body.firstElementChild;
+  
+  // Créer le formulaire nouveau mdp
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(10,10,10,.95);z-index:999;display:flex;align-items:center;justify-content:center;padding:24px;';
+  overlay.innerHTML = 
+    '<div style="background:var(--card,#141414);border:1px solid var(--border,#222);border-radius:20px;width:100%;max-width:420px;padding:36px;">'
+    + '<div style="font-family:sans-serif;font-size:22px;font-weight:800;color:#F4EFE8;margin-bottom:6px;">🔑 Nouveau mot de passe</div>'
+    + '<div style="font-size:13px;color:rgba(244,239,232,.5);margin-bottom:24px;">Choisis un nouveau mot de passe pour ton compte MANGEICI.</div>'
+    + '<div style="margin-bottom:14px;">'
+    +   '<label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#FF5A1F;display:block;margin-bottom:6px;">Nouveau mot de passe</label>'
+    +   '<input id="new-pwd" type="password" placeholder="Minimum 8 caractères" style="width:100%;background:#1C1C1C;border:1px solid #222;color:#F4EFE8;font-size:14px;padding:12px 14px;border-radius:8px;outline:none;box-sizing:border-box;">'
+    + '</div>'
+    + '<div style="margin-bottom:20px;">'
+    +   '<label style="font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#FF5A1F;display:block;margin-bottom:6px;">Confirmer</label>'
+    +   '<input id="confirm-pwd" type="password" placeholder="Répète le mot de passe" style="width:100%;background:#1C1C1C;border:1px solid #222;color:#F4EFE8;font-size:14px;padding:12px 14px;border-radius:8px;outline:none;box-sizing:border-box;">'
+    + '</div>'
+    + '<div id="npwd-msg" style="margin-bottom:12px;font-size:13px;"></div>'
+    + '<button id="btn-npwd" onclick="saveNewPasswordFromForm()" style="width:100%;background:#FF5A1F;color:white;border:none;font-size:15px;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;">✓ Enregistrer le mot de passe</button>'
+    + '</div>';
+  document.body.appendChild(overlay);
+}
+
+async function saveNewPassword(token) {
+  var pwd = document.getElementById('new-pwd').value;
+  var conf = document.getElementById('confirm-pwd').value;
+  var msg = document.getElementById('npwd-msg');
+  var btn = document.getElementById('btn-npwd');
+  
+  if (pwd.length < 8) { msg.style.color='#f87171'; msg.textContent='⚠️ Minimum 8 caractères'; return; }
+  if (pwd !== conf) { msg.style.color='#f87171'; msg.textContent='⚠️ Les mots de passe ne correspondent pas'; return; }
+  
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  
+  // D'abord établir la session avec le token de récupération
+  var { error: sessionError } = await _supabase.auth.setSession({
+    access_token: token,
+    refresh_token: token
+  });
+  
+  if (sessionError) {
+    // Si setSession échoue, essayer updateUser directement
+  }
+  
+  var { error } = await _supabase.auth.updateUser({ password: pwd });
+  
+  if (error) {
+    msg.style.color='#f87171';
+    msg.textContent='❌ Erreur: ' + error.message;
+    btn.disabled = false; btn.textContent = '✓ Enregistrer le mot de passe';
+  } else {
+    msg.style.color='#4ade80';
+    msg.textContent='✅ Mot de passe modifié ! Redirection…';
+    setTimeout(function(){
+      window.location.href = 'mangeici-dashboard.html';
+    }, 1500);
+  }
+}
+
+</script>
+</body>
+</html>

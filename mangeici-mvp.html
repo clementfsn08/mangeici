@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MANGEICI — Trouve ton resto selon ton budget au Bénin. Cotonou, Abomey-Calavi et plus.">
+<title>MANGEICI — Ton resto, selon ton budget</title>
+
+<!-- Fonts: Clash Display + Cabinet Grotesk -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════
+   DESIGN TOKENS
+══════════════════════════════════════ */
+:root {
+  --orange:       #FF5A1F;
+  --orange-2:     #FF7A45;
+  --orange-glow:  rgba(255,90,31,.18);
+  --orange-border:rgba(255,90,31,.28);
+  --gold:         #E8B84B;
+  --gold-dim:     rgba(232,184,75,.12);
+  --black:        #080808;
+  --surface:      #0F0F0F;
+  --card:         #141414;
+  --card-2:       #1A1A1A;
+  --border:       rgba(255,255,255,.07);
+  --border-2:     rgba(255,255,255,.12);
+  --white:        #F5EFE6;
+  --muted:        rgba(245,239,230,.4);
+  --muted-2:      rgba(245,239,230,.18);
+  --green:        #4ADE80;
+  --red:          #F87171;
+  --font-d:       'Clash Display', 'Syne', sans-serif;
+  --font-b:       'Cabinet Grotesk', 'DM Sans', sans-serif;
+  --radius:       20px;
+  --radius-sm:    12px;
+  --radius-xs:    8px;
+  --shadow:       0 24px 64px rgba(0,0,0,.5);
+  --shadow-sm:    0 8px 24px rgba(0,0,0,.35);
+}
+
+/* ══════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-b);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: default;
+}
+::selection { background: var(--orange); color: white; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: var(--orange); border-radius: 3px; }
+img { display: block; max-width: 100%; }
+
+/* ══════════════════════════════════════
+   NOISE GRAIN OVERLAY
+══════════════════════════════════════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: .4;
+}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 68px;
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8,8,8,.85);
+  backdrop-filter: blur(24px) saturate(1.8);
+  border-bottom: 1px solid var(--border);
+  transition: background .3s;
+}
+nav.scrolled { background: rgba(8,8,8,.97); }
+
+.nav-logo {
+  font-family: var(--font-d);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.03em;
+  text-decoration: none;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.nav-logo-mark {
+  width: 34px; height: 34px;
+  background: var(--orange);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(255,90,31,.4);
+}
+.nav-logo em { color: var(--orange); font-style: normal; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+}
+.nav-links a {
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  padding: 7px 14px;
+  border-radius: 100px;
+  transition: all .2s;
+  letter-spacing: .01em;
+}
+.nav-links a:hover { color: var(--white); background: var(--card-2); }
+.nav-cta {
+  background: var(--orange) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 16px rgba(255,90,31,.3);
+}
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,90,31,.4) !important; }
+.nav-login {
+  border: 1px solid var(--border-2) !important;
+  color: var(--white) !important;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 8px;
+  background: none;
+  border: none;
+  z-index: 101;
+}
+.hamburger span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--white);
+  border-radius: 2px;
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+.mobile-menu {
+  position: fixed;
+  top: 68px; left: 0; right: 0;
+  background: rgba(8,8,8,.98);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  z-index: 99;
+  transform: translateY(-110%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  padding: 12px 0 16px;
+}
+.mobile-menu.open { transform: translateY(0); }
+.mobile-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 28px;
+  font-size: 15px;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: all .2s;
+  font-weight: 500;
+}
+.mobile-menu a:last-child { border-bottom: none; }
+.mobile-menu a:hover { color: var(--white); background: var(--card); }
+.mobile-menu .m-cta { color: var(--orange) !important; font-weight: 700; }
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 24px 60px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Ambient orbs */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(255,90,31,.14) 0%, transparent 70%);
+  top: -200px; left: -150px;
+  pointer-events: none;
+  animation: driftA 18s ease-in-out infinite alternate;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(232,184,75,.08) 0%, transparent 70%);
+  bottom: -100px; right: -100px;
+  pointer-events: none;
+  animation: driftB 14s ease-in-out infinite alternate;
+}
+@keyframes driftA {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(60px, 80px) scale(1.15); }
+}
+@keyframes driftB {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-40px, -60px) scale(1.1); }
+}
+
+/* Dot grid */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(245,239,230,.05) 1px, transparent 1px);
+  background-size: 36px 36px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 80% 80% at center, black 40%, transparent 100%);
+}
+
+.hero-inner { position: relative; z-index: 2; max-width: 900px; width: 100%; }
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(232,184,75,.1);
+  border: 1px solid rgba(232,184,75,.25);
+  padding: 6px 16px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+  animation: fadeUp .6s ease both;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse-gold 2s ease infinite;
+}
+@keyframes pulse-gold {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(232,184,75,.5); }
+  50%       { opacity: .6; box-shadow: 0 0 0 6px transparent; }
+}
+
+.hero-h1 {
+  font-family: var(--font-d);
+  font-size: clamp(46px, 9vw, 100px);
+  font-weight: 700;
+  letter-spacing: -.04em;
+  line-height: .95;
+  margin-bottom: 24px;
+  animation: fadeUp .6s .1s ease both;
+}
+.hero-h1 .line-1 { display: block; color: var(--white); }
+.hero-h1 .line-2 {
+  display: block;
+  background: linear-gradient(135deg, var(--orange) 0%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(15px, 2.5vw, 19px);
+  color: var(--muted);
+  max-width: 480px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+  font-weight: 300;
+  animation: fadeUp .6s .2s ease both;
+}
+
+/* ══════════════════════════════════════
+   SEARCH BOX
+══════════════════════════════════════ */
+.search-box {
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: 24px;
+  padding: 20px;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  animation: fadeUp .6s .3s ease both;
+  box-shadow: var(--shadow), 0 0 0 1px rgba(255,255,255,.03);
+  position: relative;
+}
+.search-box::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 25px;
+  background: linear-gradient(135deg, rgba(255,90,31,.15), transparent 50%, rgba(232,184,75,.08));
+  pointer-events: none;
+  z-index: -1;
+}
+
+.search-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.sf { display: flex; flex-direction: column; gap: 5px; }
+.sf-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--orange);
+  padding-left: 2px;
+}
+.sf-wrap { position: relative; }
+.sf-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+  font-size: 11px;
+}
+.sf select, .sf-input {
+  width: 100%;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: var(--font-b);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 16px;
+  border-radius: var(--radius-xs);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color .2s, box-shadow .2s;
+  cursor: pointer;
+}
+.sf select:focus, .sf-input:focus {
+  border-color: var(--orange-border);
+  box-shadow: 0 0 0 3px rgba(255,90,31,.1);
+}
+.sf select option { background: var(--card-2); }
+
+.btn-search {
+  background: var(--orange);
+  color: white;
+  border: none;
+  border-radius: var(--radius-xs);
+  padding: 12px 22px;
+  font-family: var(--font-d);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: all .2s;
+  box-shadow: 0 4px 16px rgba(255,90,31,.3);
+  letter-spacing: .01em;
+}
+.btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(255,90,31,.45); }
+.btn-search:active { transform: translateY(0); }
+
+.search-text-wrap {
+  position: relative;
+  margin-bottom: 10px;
+}
+.search-text-wrap input {
+  width: 100%;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-family: var(--font-b);
+  font-size: 14px;
+  padding: 12px 44px 12px 18px;
+  border-radius: var(--radius-xs);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.search-text-wrap input:focus { border-color: var(--orange-border); box-shadow: 0 0 0 3px rgba(255,90,31,.1); }
+.search-text-wrap input::placeholder { color: var(--muted-2); font-style: italic; }
+.search-icon {
+  position: absolute;
+  right: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.qf-row {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 2px;
+}
+.qf-label { font-size: 10px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+.qf {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-b);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.qf:hover, .qf.active {
+  background: var(--orange-glow);
+  border-color: var(--orange-border);
+  color: var(--orange);
+}
+
+/* ══════════════════════════════════════
+   STATS BAR
+══════════════════════════════════════ */
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 52px;
+  flex-wrap: wrap;
+  animation: fadeUp .6s .45s ease both;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+}
+.stat:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -24px; top: 8px;
+  width: 1px; height: 28px;
+  background: var(--border);
+}
+.stat-num {
+  font-family: var(--font-d);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--white);
+}
+.stat-num em { color: var(--orange); font-style: normal; }
+.stat-lbl {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════
+   PROMO CAROUSEL
+══════════════════════════════════════ */
+.promo-band {
+  display: none;
+  padding: 0 0 8px;
+  overflow: hidden;
+  position: relative;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(90deg, var(--black) 0%, var(--surface) 50%, var(--black) 100%);
+}
+.promo-band.visible { display: block; }
+.promo-band-label {
+  position: absolute;
+  left: 20px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--orange);
+  background: var(--black);
+  padding: 4px 8px;
+  border-radius: 4px;
+  z-index: 2;
+  border: 1px solid var(--orange-border);
+}
+.promo-fade-left, .promo-fade-right {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 1;
+  pointer-events: none;
+}
+.promo-fade-left  { left: 0;  background: linear-gradient(to right, var(--black), transparent); }
+.promo-fade-right { right: 0; background: linear-gradient(to left, var(--black), transparent); }
+.promo-track-wrap { overflow: hidden; padding: 12px 0; }
+.promo-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: scrollPromos 35s linear infinite;
+}
+.promo-track:hover { animation-play-state: paused; }
+@keyframes scrollPromos {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.promo-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: 100px;
+  padding: 9px 18px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: default;
+  transition: border-color .2s;
+}
+.promo-chip:hover { border-color: var(--orange-border); }
+.promo-chip-name { font-family: var(--font-d); font-size: 13px; font-weight: 600; }
+.promo-chip-zone { font-size: 11px; color: var(--muted); }
+.promo-chip-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(255,90,31,.15);
+  color: var(--orange);
+  letter-spacing: .03em;
+}
+
+/* ══════════════════════════════════════
+   RESULTS SECTION
+══════════════════════════════════════ */
+.results-section {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+  display: none;
+}
+.results-section.visible { display: block; }
+
+.results-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-top: 60px;
+}
+.results-title {
+  font-family: var(--font-d);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -.02em;
+}
+.results-count { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.results-count strong { color: var(--orange); }
+
+.sort-wrap { position: relative; }
+.sort-wrap::after { content: '▾'; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 11px; }
+.sort-sel {
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  color: var(--white);
+  font-family: var(--font-b);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 9px 36px 9px 14px;
+  border-radius: var(--radius-xs);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.sort-sel:focus { border-color: var(--orange-border); }
+
+/* ══════════════════════════════════════
+   RESTAURANT CARDS
+══════════════════════════════════════ */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* Skeleton */
+.sk {
+  background: linear-gradient(90deg, var(--card-2) 25%, var(--card) 50%, var(--card-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: var(--radius);
+  height: 360px;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Card */
+.rc {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: transform .3s cubic-bezier(.2,0,.2,1), border-color .3s, box-shadow .3s;
+  animation: cardIn .4s ease both;
+}
+.rc:hover {
+  transform: translateY(-6px);
+  border-color: rgba(255,90,31,.22);
+  box-shadow: 0 24px 56px rgba(0,0,0,.5), 0 0 0 1px rgba(255,90,31,.08);
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Plan badge */
+.plan-tag {
+  position: absolute;
+  top: 14px; right: 14px;
+  font-size: 9px; font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 4px 11px;
+  border-radius: 100px;
+  z-index: 2;
+  backdrop-filter: blur(12px);
+}
+.plan-tag.premium { background: rgba(255,90,31,.2); color: var(--orange); border: 1px solid rgba(255,90,31,.35); }
+.plan-tag.pro     { background: rgba(232,184,75,.15); color: var(--gold); border: 1px solid rgba(232,184,75,.3); }
+.plan-tag.starter { background: rgba(96,165,250,.12); color: #60a5fa; border: 1px solid rgba(96,165,250,.25); }
+
+/* Promo pill */
+.promo-pill {
+  position: absolute;
+  top: 14px; left: 14px;
+  background: var(--orange);
+  color: white;
+  font-size: 10px; font-weight: 700;
+  padding: 4px 11px;
+  border-radius: 100px;
+  z-index: 2;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+/* Card image */
+.card-img {
+  height: 165px;
+  position: relative;
+  overflow: hidden;
+  background: var(--card-2);
+}
+.card-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform .5s cubic-bezier(.2,0,.2,1);
+}
+.rc:hover .card-img img { transform: scale(1.07); }
+.card-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(8,8,8,.9));
+  pointer-events: none;
+}
+
+/* Plan dot in name */
+.plan-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Card body */
+.card-body { padding: 18px 20px 0; }
+.card-name {
+  font-family: var(--font-d);
+  font-size: 17px; font-weight: 600;
+  letter-spacing: -.01em;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+.card-loc {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.card-divider { height: 1px; background: var(--border); margin-bottom: 14px; }
+.card-meta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.card-price-from { font-size: 9px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-bottom: 3px; }
+.card-price {
+  font-family: var(--font-d);
+  font-size: 24px; font-weight: 700;
+  color: var(--orange);
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.card-price small { font-size: 12px; color: var(--muted); font-family: var(--font-b); font-weight: 400; }
+.card-rating { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+.stars { color: var(--gold); font-size: 12px; letter-spacing: 1px; }
+.nb-avis { font-size: 11px; color: var(--muted); }
+
+/* Ambiances */
+.card-tags { display: flex; gap: 6px; flex-wrap: wrap; padding: 0 20px 14px; }
+.ctag {
+  font-size: 11px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  padding: 3px 11px;
+  border-radius: 100px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Card footer */
+.card-footer {
+  padding: 13px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.status-open {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--green);
+}
+.status-open::before {
+  content: '';
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: pulse-g 2.2s ease infinite;
+}
+.status-closed {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--muted);
+}
+.status-closed::before { content: ''; width: 7px; height: 7px; background: var(--muted); border-radius: 50%; }
+@keyframes pulse-g {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,.4); }
+  50%       { box-shadow: 0 0 0 5px transparent; }
+}
+.card-actions { display: flex; gap: 7px; align-items: center; }
+.btn-menu {
+  background: rgba(255,90,31,.1);
+  color: var(--orange);
+  border: 1px solid var(--orange-border);
+  font-family: var(--font-b);
+  font-size: 12px; font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-menu:hover { background: var(--orange); color: white; }
+.btn-gps {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-family: var(--font-b);
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all .2s;
+  text-decoration: none;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.btn-gps:hover { background: rgba(74,222,128,.08); border-color: rgba(74,222,128,.35); color: var(--green); }
+.btn-fav {
+  background: transparent;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 100px;
+  cursor: pointer;
+  transition: all .2s;
+  line-height: 1;
+}
+.btn-fav:hover { border-color: rgba(248,113,113,.35); background: rgba(248,113,113,.08); }
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  display: none;
+}
+.empty-state.visible { display: block; }
+.empty-emoji { font-size: 52px; margin-bottom: 16px; }
+.empty-title { font-family: var(--font-d); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.empty-sub { font-size: 14px; color: var(--muted); }
+
+/* ══════════════════════════════════════
+   HOW IT WORKS
+══════════════════════════════════════ */
+.section { padding: 100px 24px; max-width: 1100px; margin: 0 auto; }
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 12px;
+}
+.section-h {
+  font-family: var(--font-d);
+  font-size: clamp(30px, 5vw, 50px);
+  font-weight: 700;
+  letter-spacing: -.03em;
+  line-height: 1.05;
+  margin-bottom: 60px;
+}
+.section-h em { color: var(--orange); font-style: normal; }
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+.step-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .3s, transform .3s;
+}
+.step-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,90,31,.05) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.step-card:hover { border-color: rgba(255,90,31,.25); transform: translateY(-3px); }
+.step-card:hover::before { opacity: 1; }
+.step-num {
+  font-family: var(--font-d);
+  font-size: 72px;
+  font-weight: 700;
+  color: rgba(255,90,31,.07);
+  position: absolute;
+  top: -12px; right: 16px;
+  line-height: 1;
+  pointer-events: none;
+}
+.step-icon { font-size: 28px; margin-bottom: 16px; }
+.step-title { font-family: var(--font-d); font-size: 17px; font-weight: 600; margin-bottom: 8px; letter-spacing: -.01em; }
+.step-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ══════════════════════════════════════
+   NEWSLETTER
+══════════════════════════════════════ */
+.nl-section {
+  padding: 0 24px 80px;
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+.nl-box {
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: 28px;
+  padding: 52px 44px;
+  position: relative;
+  overflow: hidden;
+}
+.nl-box::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%;
+  transform: translateX(-50%);
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(255,90,31,.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.nl-title { font-family: var(--font-d); font-size: clamp(22px, 4vw, 32px); font-weight: 700; letter-spacing: -.02em; margin-bottom: 10px; }
+.nl-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+.nl-form { display: flex; gap: 10px; max-width: 460px; margin: 0 auto; }
+.nl-input {
+  flex: 1;
+  background: var(--card-2);
+  border: 1px solid var(--border-2);
+  color: var(--white);
+  font-family: var(--font-b);
+  font-size: 14px;
+  padding: 13px 20px;
+  border-radius: 100px;
+  outline: none;
+  transition: border-color .2s;
+}
+.nl-input:focus { border-color: var(--orange-border); }
+.nl-input::placeholder { color: var(--muted-2); }
+.nl-btn {
+  background: var(--orange);
+  color: white;
+  border: none;
+  font-family: var(--font-d);
+  font-size: 13px; font-weight: 700;
+  padding: 13px 24px;
+  border-radius: 100px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+  letter-spacing: .01em;
+  box-shadow: 0 4px 16px rgba(255,90,31,.3);
+}
+.nl-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,90,31,.45); }
+.nl-ok { display: none; font-size: 13px; color: var(--green); margin-top: 14px; }
+.nl-ok.show { display: flex; justify-content: center; align-items: center; gap: 6px; }
+
+/* ══════════════════════════════════════
+   SUGGESTIONS
+══════════════════════════════════════ */
+.suggest-section { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+.suggest-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 52px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.suggest-box::before {
+  content: '';
+  position: absolute;
+  top: -60px; left: -60px;
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(255,90,31,.07), transparent 70%);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════
+   CTA BANNER
+══════════════════════════════════════ */
+.cta-banner {
+  margin: 0 24px 80px;
+  max-width: 1100px;
+  margin-left: auto; margin-right: auto;
+  background: linear-gradient(135deg, var(--orange) 0%, #FF7A45 50%, #E8B84B 100%);
+  border-radius: 28px;
+  padding: 60px 44px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 30% 50%, rgba(255,255,255,.12), transparent);
+  pointer-events: none;
+}
+.cta-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; right: -40px;
+  width: 200px; height: 200px;
+  background: rgba(0,0,0,.08);
+  border-radius: 50%;
+}
+.cta-h { font-family: var(--font-d); font-size: clamp(26px, 4vw, 42px); font-weight: 700; color: white; margin-bottom: 10px; letter-spacing: -.02em; }
+.cta-p { color: rgba(255,255,255,.85); font-size: 15px; margin-bottom: 28px; }
+.btn-white {
+  background: white;
+  color: var(--orange);
+  border: none;
+  border-radius: 100px;
+  padding: 14px 36px;
+  font-family: var(--font-d);
+  font-size: 15px; font-weight: 700;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .01em;
+}
+.btn-white:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,.25); }
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 32px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.footer-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 28px;
+  margin-bottom: 32px;
+}
+.footer-logo { font-family: var(--font-d); font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+.footer-logo em { color: var(--orange); font-style: normal; }
+.footer-tagline { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+.footer-links a:hover { color: var(--white); }
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+.footer-copy { font-size: 12px; color: var(--muted-2); }
+
+/* ══════════════════════════════════════
+   MODAL
+══════════════════════════════════════ */
+.modal-ov {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.modal-ov.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border-2);
+  border-radius: 28px;
+  width: 100%; max-width: 580px;
+  max-height: 88vh; overflow-y: auto;
+  transform: translateY(24px) scale(.98);
+  transition: transform .3s cubic-bezier(.2,0,.2,1);
+  box-shadow: 0 40px 100px rgba(0,0,0,.7);
+}
+.modal-ov.open .modal { transform: translateY(0) scale(1); }
+.modal-header { padding: 28px 28px 0; display: flex; justify-content: space-between; align-items: flex-start; }
+.modal-emoji { font-size: 52px; }
+.modal-close {
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  width: 36px; height: 36px;
+  border-radius: 50%; font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+.modal-close:hover { background: var(--orange); border-color: var(--orange); color: white; }
+.modal-body { padding: 20px 28px 32px; }
+.modal-name { font-family: var(--font-d); font-size: 28px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 5px; }
+.modal-zone { font-size: 13px; color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 5px; }
+.m-st { font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--orange); font-weight: 700; margin: 22px 0 10px; }
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ic {
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 12px 14px;
+}
+.ic-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: .14em; margin-bottom: 5px; }
+.ic-val { font-size: 14px; font-weight: 500; }
+.menu-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.menu-item:last-child { border-bottom: none; }
+.menu-item-name { font-size: 14px; }
+.menu-item-price { font-family: var(--font-d); font-size: 15px; font-weight: 700; color: var(--orange); }
+.gps-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: rgba(74,222,128,.08);
+  border: 1px solid rgba(74,222,128,.25);
+  color: var(--green);
+  font-family: var(--font-b);
+  font-size: 13px; font-weight: 500;
+  padding: 12px 22px;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all .2s;
+  margin-top: 16px;
+  width: 100%;
+}
+.gps-btn:hover { background: rgba(74,222,128,.15); }
+
+/* ══════════════════════════════════════
+   SCROLL TOP
+══════════════════════════════════════ */
+.scroll-top {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--orange);
+  border: none; color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: none; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(255,90,31,.4);
+  z-index: 99;
+  transition: all .2s;
+}
+.scroll-top:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255,90,31,.55); }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity .65s ease, transform .65s ease;
+}
+.reveal.vis { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media (max-width: 900px) {
+  .search-row { grid-template-columns: 1fr 1fr; }
+  .btn-search { grid-column: 1 / -1; justify-content: center; }
+}
+@media (max-width: 640px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hamburger { display: flex; }
+  .search-row { grid-template-columns: 1fr; }
+  .nl-form { flex-direction: column; }
+  .nl-btn { width: 100%; text-align: center; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .stats-bar { gap: 28px; }
+  .stat:not(:last-child)::after { display: none; }
+  .cta-banner { margin: 0 16px 60px; padding: 44px 28px; }
+  .suggest-box, .nl-box { padding: 36px 24px; }
+  footer { padding: 40px 20px 24px; }
+  .footer-top { flex-direction: column; gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-mark">🍽️</div>
+    MANGE<em>ICI</em>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#results-section" onclick="loadTous()">Restaurants</a></li>
+    <li><a href="#how-section">Comment ça marche</a></li>
+    <li><a href="mangeici-vision.html">Notre vision</a></li>
+    <li><a href="mangeici-compte.html">👤 Mon compte</a></li>
+    <li><a href="mangeici-login.html" class="nav-login">Se connecter</a></li>
+    <li><a href="mangeici-inscription.html" class="nav-cta">Inscrire mon resto</a></li>
+  </ul>
+  <button class="hamburger" id="ham" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mmenu">
+  <a href="#results-section" onclick="loadTous();toggleMenu()">🍽️ Restaurants</a>
+  <a href="#how-section" onclick="toggleMenu()">ℹ️ Comment ça marche</a>
+  <a href="mangeici-vision.html">✨ Notre vision</a>
+  <a href="mangeici-compte.html">👤 Mon compte</a>
+  <a href="mangeici-login.html">🔓 Se connecter</a>
+  <a href="mangeici-inscription.html" class="m-cta">➕ Inscrire mon restaurant</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">🇧🇯 Disponible au Bénin</div>
+    <h1 class="hero-h1">
+      <span class="line-1">Ton resto,</span>
+      <span class="line-2">selon ton budget</span>
+    </h1>
+    <p class="hero-sub">
+      Trouve en quelques secondes le restaurant parfait selon ta zone,
+      ton budget et tes envies du moment. Gratuit, toujours.
+    </p>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <div class="search-row">
+        <div class="sf">
+          <span class="sf-label">📍 Zone</span>
+          <div class="sf-wrap">
+            <select id="sel-zone">
+              <option value="">Toutes les zones</option>
+            </select>
+          </div>
+        </div>
+        <div class="sf">
+          <span class="sf-label">💰 Budget max</span>
+          <div class="sf-wrap">
+            <select id="sel-budget">
+              <option value="">Peu importe</option>
+              <option value="1500">Jusqu'à 1 500F</option>
+              <option value="3000">Jusqu'à 3 000F</option>
+              <option value="5000">Jusqu'à 5 000F</option>
+              <option value="10000">Jusqu'à 10 000F</option>
+            </select>
+          </div>
+        </div>
+        <div class="sf">
+          <span class="sf-label">🍴 Type de cuisine</span>
+          <div class="sf-wrap">
+            <select id="sel-type">
+              <option value="">Tous types</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-search" onclick="doSearch()">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          Chercher
+        </button>
+      </div>
+      <div class="search-text-wrap">
+        <input type="text" id="search-text" placeholder="🔍  Rechercher un plat, un restaurant, une cuisine…" onkeydown="if(event.key==='Enter')doSearch()">
+        <span class="search-icon">🔍</span>
+      </div>
+      <div class="qf-row">
+        <span class="qf-label">Filtres :</span>
+        <button class="qf" onclick="quickFilter(this,'open')">🟢 Ouvert maintenant</button>
+        <button class="qf" onclick="quickFilter(this,'couple')">💕 En couple</button>
+        <button class="qf" onclick="quickFilter(this,'amis')">👥 Entre amis</button>
+        <button class="qf" onclick="quickFilter(this,'solo')">🙋 Solo</button>
+        <button class="qf" onclick="quickFilter(this,'promo')">🔥 Promos</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat">
+        <div class="stat-num" id="stat-restos">—<em>+</em></div>
+        <div class="stat-lbl">Restaurants</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num" id="stat-zones">—<em>+</em></div>
+        <div class="stat-lbl">Zones</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100<em>%</em></div>
+        <div class="stat-lbl">Gratuit</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROMO CAROUSEL -->
+<div id="promo-carousel-section" class="promo-band">
+  <div class="promo-fade-left"></div>
+  <div class="promo-fade-right"></div>
+  <div class="promo-track-wrap">
+    <div id="promo-track" class="promo-track"></div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results-section" class="results-section">
+  <div class="results-header">
+    <div>
+      <div class="results-title" id="results-title">Restaurants</div>
+      <div class="results-count" id="results-count"></div>
+    </div>
+    <div class="sort-wrap">
+      <select class="sort-sel" onchange="sortResults(this.value)">
+        <option value="default">⭐ Recommandés</option>
+        <option value="all">📋 Tous les restaurants</option>
+        <option value="price-asc">💰 Prix croissant</option>
+        <option value="price-desc">💰 Prix décroissant</option>
+        <option value="rating">🏆 Mieux notés</option>
+      </select>
+    </div>
+  </div>
+  <div class="cards-grid" id="cards-grid"></div>
+  <div class="empty-state" id="empty-state">
+    <div class="empty-emoji">🔍</div>
+    <div class="empty-title">Aucun restaurant trouvé</div>
+    <div class="empty-sub">Essaie d'élargir ta zone ou de changer ton budget.</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section reveal" id="how-section">
+  <div class="eyebrow">Comment ça marche</div>
+  <div class="section-h">Ton resto en <em>3 étapes</em></div>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-icon">📍</div>
+      <div class="step-title">Choisis ta zone</div>
+      <div class="step-desc">Sélectionne le quartier où tu veux manger. On couvre tous les grands quartiers de Cotonou et au-delà.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-icon">💰</div>
+      <div class="step-title">Fixe ton budget</div>
+      <div class="step-desc">Indique ton budget maximum. On t'affiche uniquement les restos adaptés. Zéro mauvaise surprise.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-icon">✅</div>
+      <div class="step-title">Choisis et régale-toi</div>
+      <div class="step-desc">Consulte le menu, vérifie si c'est ouvert et rends-toi sur place. Gratuit, toujours.</div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-icon">🍽️</div>
+      <div class="step-title">Tu as un resto ?</div>
+      <div class="step-desc">Inscris-le en 2 minutes et touche des milliers de clients potentiels chaque jour.</div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="nl-section reveal">
+  <div class="nl-box">
+    <div class="eyebrow" style="margin-bottom:10px;">📩 Newsletter</div>
+    <div class="nl-title">Reste informé des meilleurs restos</div>
+    <div class="nl-sub">Reçois chaque semaine les nouvelles ouvertures, les promos et les bons plans resto.</div>
+    <div class="nl-form">
+      <input class="nl-input" type="email" id="nl-email" placeholder="ton@email.com">
+      <button class="nl-btn" onclick="subscribeNL()">S'inscrire →</button>
+    </div>
+    <div class="nl-ok" id="nl-ok">✅ Inscription confirmée !</div>
+  </div>
+</section>
+
+<!-- SUGGESTIONS -->
+<section class="suggest-section reveal">
+  <div class="suggest-box">
+    <div style="font-size:40px;margin-bottom:16px;">💡</div>
+    <div class="eyebrow" style="margin-bottom:10px;">Votre avis</div>
+    <div class="nl-title" style="margin-bottom:10px;">Une suggestion ?</div>
+    <div class="nl-sub">Une idée pour améliorer MANGEICI ? Un restaurant à ajouter ? Dis-nous tout.</div>
+    <a href="mangeici-suggestions.html" style="display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:white;text-decoration:none;font-family:var(--font-d);font-size:14px;font-weight:700;padding:13px 30px;border-radius:100px;transition:all .2s;box-shadow:0 4px 16px rgba(255,90,31,.3);">
+      📨 Faire une suggestion
+    </a>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-banner reveal">
+  <div class="cta-h">Tu es restaurateur au Bénin ?</div>
+  <div class="cta-p">Rejoins MANGEICI gratuitement et augmente ta visibilité dès aujourd'hui.</div>
+  <button class="btn-white" onclick="location.href='mangeici-inscription.html'">Inscrire mon restaurant →</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">MANGE<em>ICI</em></div>
+      <div class="footer-tagline">Ton resto selon ton budget · Bénin 🇧🇯</div>
+    </div>
+    <div class="footer-links">
+      <a href="#results-section" onclick="loadTous()">Restaurants</a>
+      <a href="mangeici-vision.html">Notre vision</a>
+      <a href="mangeici-inscription.html">Inscrire mon resto</a>
+      <a href="mangeici-login.html">Espace restaurateur</a>
+      <a href="mangeici-suggestions.html">Suggestions</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 MANGEICI · Tous droits réservés</div>
+    <div class="footer-copy">Fait avec ❤️ au Bénin</div>
+  </div>
+</footer>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal-ov" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-emoji" id="modal-emoji"></div>
+      <button class="modal-close" onclick="closeModalD()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-name" id="modal-name"></div>
+      <div class="modal-zone" id="modal-zone"></div>
+      <div id="modal-status"></div>
+      <div class="m-st">Infos générales</div>
+      <div class="info-grid" id="modal-info"></div>
+      <div class="m-st">Menu</div>
+      <div id="modal-menu"></div>
+      <div class="m-st">Ambiances</div>
+      <div class="card-tags" id="modal-tags" style="padding:0;margin-top:8px;"></div>
+      <div id="modal-avis"></div>
+      <div id="modal-gps"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCROLL TOP -->
+<button class="scroll-top" id="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+var SUPA = "https://ldcweouzknksuudvroqu.supabase.co";
+var KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3dlb3V6a25rc3V1ZHZyb3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA0NjAsImV4cCI6MjA5MTY3NjQ2MH0.vyCqou8IAugFszrizK0eVRu3G2HylNKZmEp8vn0oKoE";
+var H    = {apikey:KEY, Authorization:"Bearer "+KEY, "Content-Type":"application/json"};
+
+function get(ep, q) {
+  return fetch(SUPA+"/rest/v1/"+ep+(q||""), {headers:H}).then(function(r){return r.json();});
+}
+function post(ep, body) {
+  return fetch(SUPA+"/rest/v1/"+ep, {method:"POST", headers:Object.assign({},H,{Prefer:"return=minimal"}), body:JSON.stringify(body)}).then(function(r){return r.ok;});
+}
+function patch(ep, id, body) {
+  fetch(SUPA+"/rest/v1/"+ep+"?id=eq."+id, {method:"PATCH", headers:H, body:JSON.stringify(body)});
+}
+
+var ALL=[], filtered=[], activeF=[], curSort="default";
+var CEMOJI = {
+  "Cuisine béninoise":"🍛","Grillades":"🔥","Asiatique":"🍜",
+  "Libanais":"🧆","Fast-food":"🍔","Fruits de mer":"🦞",
+  "Pizzeria":"🍕","Végétarien":"🥗","Café / Snack":"☕"
+};
+
+// HAMBURGER
+function toggleMenu() {
+  document.getElementById("ham").classList.toggle("open");
+  document.getElementById("mmenu").classList.toggle("open");
+}
+document.addEventListener("click", function(e) {
+  var h = document.getElementById("ham");
+  var m = document.getElementById("mmenu");
+  if (h && m && !h.contains(e.target) && !m.contains(e.target)) {
+    h.classList.remove("open");
+    m.classList.remove("open");
+  }
+});
+
+// FILTRES DYNAMIQUES - charge depuis TOUS les restos
+function loadFilters() {
+  get("restaurants", "?select=zone,cuisine").then(function(data) {
+    if (!Array.isArray(data)) return;
+    var zones = {}, types = {};
+    data.forEach(function(r) {
+      if (r.zone) zones[r.zone] = true;
+      var c = r.cuisine;
+      if (!c) return;
+      if (typeof c === "string") { try { c = JSON.parse(c); } catch(e) { c = [c]; } }
+      if (Array.isArray(c)) c.forEach(function(t) { if (t) types[t] = true; });
+    });
+    var zArr = Object.keys(zones).sort();
+    var tArr = Object.keys(types).sort();
+    var selZ = document.getElementById("sel-zone");
+    var selT = document.getElementById("sel-type");
+    zArr.forEach(function(z) {
+      var o = document.createElement("option"); o.value = z; o.textContent = z; selZ.appendChild(o);
+    });
+    tArr.forEach(function(t) {
+      var o = document.createElement("option"); o.value = t; o.textContent = t; selT.appendChild(o);
+    });
+    document.getElementById("stat-zones").innerHTML = zArr.length + "<span>+</span>";
+  });
+}
+
+
+// ── CARROUSEL PROMOTIONS ──
+function loadPromos() {
+  fetch(SUPA + "/rest/v1/promotions?statut=eq.on&select=*,restaurants(nom,zone,plan,statut,visible)&order=created_at.desc", {headers:H})
+    .then(function(r){return r.json();})
+    .then(function(data) {
+      var track = document.getElementById('promo-track');
+      var section = document.getElementById('promo-carousel-section');
+      if (!track) return;
+      var promos = Array.isArray(data) ? data.filter(function(p){
+        return p.restaurants && p.restaurants.statut === 'actif' && p.restaurants.visible === true;
+      }) : [];
+      if (!promos.length) {
+        if (section) section.style.display = 'none';
+        return;
+      }
+      if (section) section.style.display = 'block';
+      // Dupliquer les promos pour un scroll infini fluide
+      var items = promos.concat(promos);
+      var html = '';
+      items.forEach(function(p) {
+        var r = p.restaurants;
+        var planCol = r.plan==='premium'?'var(--orange)':r.plan==='pro'?'#facc15':r.plan==='starter'?'#60a5fa':'var(--muted)';
+        html += '<div style="display:inline-flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:100px;padding:10px 20px;white-space:nowrap;flex-shrink:0;">';
+        html += '<span style="color:'+planCol+';font-size:14px;">🔥</span>';
+        html += '<span style="font-family:var(--font-d);font-size:13px;font-weight:700;">'+r.nom+'</span>';
+        html += '<span style="font-size:11px;color:var(--muted);">'+r.zone+'</span>';
+        html += '<span style="background:rgba(255,90,31,.15);color:var(--orange);font-size:12px;font-weight:700;padding:3px 10px;border-radius:100px;">'+(p.titre||p.reduction||'Promo')+'</span>';
+        html += '</div>';
+      });
+      track.innerHTML = html;
+    }).catch(function(){
+      var section = document.getElementById('promo-carousel-section');
+      if (section) section.style.display = 'none';
+    });
+}
+
+function loadStats() {
+  get("restaurants", "?statut=eq.actif&visible=eq.true&select=id").then(function(d) {
+    if (Array.isArray(d)) document.getElementById("stat-restos").innerHTML = d.length + "<span>+</span>";
+  });
+}
+
+function showSk() {
+  document.getElementById("results-section").classList.add("visible");
+  var h = ""; for (var i=0;i<6;i++) h += '<div class="sk"></div>';
+  document.getElementById("cards-grid").innerHTML = h;
+  document.getElementById("empty-state").classList.remove("visible");
+}
+
+function loadTous() {
+  showSk();
+  document.getElementById("results-title").textContent = "Tous les restaurants";
+  get("restaurants", "?statut=eq.actif&visible=eq.true&select=*,promotions(titre,reduction,statut)").then(function(d) {
+    ALL = Array.isArray(d) ? d : [];
+    curSort = "default";
+    document.querySelector(".sort-sel").value = "default";
+    applyLocal();
+    document.getElementById("results-section").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+}
+
+function loadRestos(f) {
+  f = f || {};
+  showSk();
+  document.getElementById("results-title").textContent = "Restaurants trouvés";
+  var q = "?statut=eq.actif&visible=eq.true&select=*,promotions(titre,reduction,statut)";
+  if (f.zone) q += "&zone=eq." + encodeURIComponent(f.zone);
+  if (f.type) q += "&cuisine=cs.%7B%22" + encodeURIComponent(f.type) + "%22%7D";
+  get("restaurants", q).then(function(data) {
+    ALL = Array.isArray(data) ? data : [];
+    if (f.budget) {
+      ALL = ALL.filter(function(r) { return (r.prix_min||0) <= parseInt(f.budget); });
+    }
+    applyLocal();
+  });
+}
+
+function isOpen() { var h = new Date().getHours(); return h >= 7 && h <= 23; }
+
+function applyLocal() {
+  var arr = ALL.slice();
+  if (activeF.indexOf("open")   !== -1) arr = arr.filter(function() { return isOpen(); });
+  if (activeF.indexOf("promo")  !== -1) arr = arr.filter(function(r) {
+    return r.promotions && r.promotions.some(function(p) { return p.statut === "on"; });
+  });
+  if (activeF.indexOf("couple") !== -1) arr = arr.filter(function(r) {
+    return r.ambiances && r.ambiances.indexOf("En couple") !== -1;
+  });
+  if (activeF.indexOf("amis")   !== -1) arr = arr.filter(function(r) {
+    return r.ambiances && r.ambiances.indexOf("Entre amis") !== -1;
+  });
+  if (activeF.indexOf("solo")   !== -1) arr = arr.filter(function(r) {
+    return r.ambiances && r.ambiances.indexOf("Solo") !== -1;
+  });
+  filtered = arr;
+  doSort();
+}
+
+function doSort() {
+  var arr = filtered.slice();
+  var po = {premium:0, pro:1, starter:2, gratuit:3};
+  if (curSort==="default"||curSort==="all") arr.sort(function(a,b){return (po[a.plan]||3)-(po[b.plan]||3);});
+  if (curSort==="price-asc")  arr.sort(function(a,b){return (a.prix_min||0)-(b.prix_min||0);});
+  if (curSort==="price-desc") arr.sort(function(a,b){return (b.prix_min||0)-(a.prix_min||0);});
+  if (curSort==="rating")     arr.sort(function(a,b){return (b.rating||0)-(a.rating||0);});
+  render(arr);
+}
+
+// RENDER - using DOM createElement to avoid ALL quote escaping issues
+function render(arr) {
+  var grid  = document.getElementById("cards-grid");
+  var empty = document.getElementById("empty-state");
+  var cnt   = document.getElementById("results-count");
+  var s = arr.length > 1 ? "s" : "";
+  cnt.innerHTML = "<strong>" + arr.length + "</strong> restaurant" + s + " trouvé" + s;
+  if (!arr.length) { grid.innerHTML = ""; empty.classList.add("visible"); return; }
+  empty.classList.remove("visible");
+  grid.innerHTML = "";
+  var open = isOpen();
+
+  for (var i = 0; i < arr.length; i++) {
+    var r = arr[i];
+    var promo = null;
+    if (r.promotions) {
+      for (var j = 0; j < r.promotions.length; j++) {
+        if (r.promotions[j].statut === "on") { promo = r.promotions[j]; break; }
+      }
+    }
+    var pl = r.plan === "premium" ? "⭐ Premium"
+           : r.plan === "pro"     ? "✦ Pro"
+           : r.plan === "starter" ? "⚡ Starter" : null;
+    var stars = "";
+    for (var k = 0; k < Math.round(r.rating || 0); k++) stars += "★";
+    var ambs = (r.ambiances || []).slice(0, 3);
+    var img  = r.photo_url || "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80&fit=crop";
+
+    // Crée la carte via DOM pour éviter tout problème d'échappement
+    var card = document.createElement("div");
+    card.className = "rc ca";
+    card.style.animationDelay = (i * 0.06) + "s";
+    card.setAttribute("onclick", "openM('" + r.id + "')");
+
+    var inner = "";
+    if (promo) inner += '<div class="promo-badge">' + (promo.reduction || "") + "</div>";
+    if (pl)    inner += '<div class="plan-tag ' + r.plan + '">' + pl + "</div>";
+
+    // Image avec setAttribute pour éviter le problème onerror
+    var imgEl = document.createElement("img");
+    imgEl.src = img;
+    imgEl.alt = r.nom;
+    imgEl.loading = "lazy";
+    imgEl.onerror = function() { this.style.display = "none"; };
+
+    var imgWrap = document.createElement("div");
+    imgWrap.className = "card-img";
+    imgWrap.appendChild(imgEl);
+
+    inner += '<div class="card-content">';
+    var planDot = r.plan === 'premium' ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--orange);margin-right:6px;vertical-align:middle;" title="Premium"></span>'
+              : r.plan === 'pro'     ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#facc15;margin-right:6px;vertical-align:middle;" title="Pro"></span>'
+              : r.plan === 'starter' ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#60a5fa;margin-right:6px;vertical-align:middle;" title="Starter"></span>'
+              : '';
+    inner += '<div class="card-name">' + planDot + r.nom + "</div>";
+    inner += '<div class="card-loc"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--orange)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + r.zone + " · Cotonou</div>";
+    inner += '<div class="card-div"></div>';
+    inner += '<div class="card-meta"><div><div class="card-pfrom">À partir de</div>';
+    inner += '<div class="card-pval">' + (r.prix_min || 0).toLocaleString("fr-FR") + 'F <small>/ plat</small></div></div>';
+    inner += '<div class="card-rating"><span class="stars">' + stars + "</span>" + (r.rating || 0);
+    inner += ' <span style="color:var(--muted);font-size:11px;">(' + (r.nb_avis || 0) + ")</span></div></div></div>";
+    inner += '<div class="card-tags">';
+    for (var a = 0; a < ambs.length; a++) inner += '<div class="ctag">' + ambs[a] + "</div>";
+    inner += "</div>";
+    inner += '<div class="card-footer">';
+    inner += '<div class="' + (open ? "status-open" : "status-closed") + '">' + (open ? "Ouvert" : "Fermé") + "</div>";
+    inner += '<div style="display:flex;gap:8px;align-items:center;">';
+    if (r.gps_lat) {
+      inner += '<a class="btn-gps" href="https://www.google.com/maps/dir/?api=1&destination=' + r.gps_lat + "," + r.gps_lng + '&travelmode=driving" target="_blank" rel="noopener" onclick="event.stopPropagation()">';
+      inner += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Y aller</a>';
+    }
+    inner += '<button class="card-btn" onclick="event.stopPropagation();openM(\'' + r.id + '\')">Menu</button>';
+    if (r.plan === "premium") {
+      inner += '<a class="btn-gps" href="mangeici-profil-resto.html?id=' + r.id + '" onclick="event.stopPropagation()">';
+      inner += '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>Profil</a>';
+    }
+    inner += "</div></div>";
+    card.innerHTML = inner;
+    card.querySelector(".card-img") ? card.querySelector(".card-img").before(imgWrap) : card.insertBefore(imgWrap, card.firstChild);
+    // Fix: replace the empty card-img div with our imgWrap
+    var existingImgDiv = card.querySelector(".card-img");
+    if (existingImgDiv) existingImgDiv.replaceWith(imgWrap);
+    grid.appendChild(card);
+  }
+  initFavBtns();
+}
+
+function openM(id) {
+  var r = null;
+  for (var i = 0; i < ALL.length; i++) if (ALL[i].id === id) { r = ALL[i]; break; }
+  if (!r) return;
+  var open = isOpen();
+  var ce = (r.cuisine && r.cuisine[0]) ? r.cuisine[0] : "";
+  document.getElementById("modal-emoji").textContent = CEMOJI[ce] || "🍽️";
+  document.getElementById("modal-name").textContent = r.nom;
+  document.getElementById("modal-zone").innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--orange)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>' + r.zone + " · Cotonou";
+  document.getElementById("modal-status").innerHTML = '<div class="' + (open ? "status-open" : "status-closed") + '" style="margin-top:4px;">' + (open ? "Ouvert maintenant" : "Fermé") + "</div>";
+  var cl = (r.cuisine && r.cuisine.length) ? r.cuisine.join(", ") : "—";
+  document.getElementById("modal-info").innerHTML =
+    '<div class="ic"><div class="ic-label">💰 Prix min</div><div class="ic-val" style="color:var(--orange)">' + (r.prix_min||0).toLocaleString("fr-FR") + "F</div></div>" +
+    '<div class="ic"><div class="ic-label">🍴 Cuisine</div><div class="ic-val">' + cl + "</div></div>" +
+    '<div class="ic"><div class="ic-label">⭐ Note</div><div class="ic-val">' + (r.rating||0) + " / 5</div></div>" +
+    '<div class="ic"><div class="ic-label">📞 Téléphone</div><div class="ic-val">' + (r.afficher_tel !== false ? r.telephone : "—") + "</div></div>";
+  var ambM = r.ambiances || [];
+  var ambH = ""; for (var a = 0; a < ambM.length; a++) ambH += '<div class="ctag">' + ambM[a] + "</div>";
+  document.getElementById("modal-tags").innerHTML = ambH;
+  document.getElementById("modal-menu").innerHTML = '<div style="color:var(--muted);font-size:13px">Chargement…</div>';
+  document.getElementById("modal-avis").innerHTML = '<a href="mangeici-laisser-avis.html?id=' + id + '" style="display:inline-flex;align-items:center;gap:7px;margin-top:16px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.3);color:#facc15;font-size:13px;font-weight:500;padding:10px 18px;border-radius:100px;text-decoration:none;width:100%;justify-content:center;">⭐ Laisser un avis</a>';
+  document.getElementById("modal-gps").innerHTML = r.gps_lat
+    ? '<a class="gps-btn" href="https://www.google.com/maps/dir/?api=1&destination=' + r.gps_lat + "," + r.gps_lng + '&travelmode=driving" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>Obtenir l\'itinéraire · ' + (r.adresse || r.zone + ", Cotonou") + "</a>"
+    : "";
+  get("menus", "?restaurant_id=eq." + id + "&disponible=eq.true&order=categorie").then(function(menus) {
+    if (Array.isArray(menus) && menus.length) {
+      var mH = "";
+      for (var m = 0; m < menus.length; m++) {
+        mH += '<div class="menu-item"><div class="menu-item-name">' + (menus[m].emoji || "🍽") + " " + menus[m].nom + '</div><div class="menu-item-price">' + (menus[m].prix || 0).toLocaleString("fr-FR") + "F</div></div>";
+      }
+      document.getElementById("modal-menu").innerHTML = mH;
+    } else {
+      document.getElementById("modal-menu").innerHTML = '<div style="color:var(--muted);font-size:13px">Menu non renseigné</div>';
+    }
+  });
+  patch("restaurants", id, {nb_vues: (r.nb_vues||0)+1});
+  document.getElementById("modal-ov").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModal(e) { if (e.target === document.getElementById("modal-ov")) closeModalD(); }
+function closeModalD() { document.getElementById("modal-ov").classList.remove("open"); document.body.style.overflow = ""; }
+document.addEventListener("keydown", function(e) { if (e.key === "Escape") closeModalD(); });
+
+function doSearch() {
+  var z = document.getElementById("sel-zone").value;
+  var t = document.getElementById("sel-type").value;
+  var b = document.getElementById("sel-budget").value;
+  var txt = document.getElementById("search-text") ? document.getElementById("search-text").value.trim() : "";
+  if (txt) {
+    loadRestosText(txt, z, b);
+  } else {
+    loadRestos({zone:z, type:t, budget:b});
+  }
+  document.getElementById("results-section").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function loadRestosText(query, zone, budget) {
+  showSk();
+  document.getElementById("results-title").textContent = "Résultats pour \"" + query + "\"";
+  fetch(SUPA + "/rest/v1/rpc/search_restaurants", {
+    method: "POST",
+    headers: Object.assign({}, H, {Prefer:"return=representation"}),
+    body: JSON.stringify({query: query})
+  }).then(function(r){return r.json();}).then(function(data) {
+    ALL = Array.isArray(data) ? data : [];
+    if (zone) ALL = ALL.filter(function(r){return r.zone === zone;});
+    if (budget) ALL = ALL.filter(function(r){return (r.prix_min||0) <= parseInt(budget);});
+    applyLocal();
+  }).catch(function() { loadRestos({zone:zone, budget:budget}); });
+}
+
+function quickFilter(btn, key) {
+  btn.classList.toggle("active");
+  var idx = activeF.indexOf(key);
+  if (idx !== -1) activeF.splice(idx, 1); else activeF.push(key);
+  if (ALL.length) applyLocal();
+}
+
+function sortResults(val) {
+  curSort = val;
+  if (val === "all") { loadRestos(); return; }
+  doSort();
+}
+
+function subscribeNL() {
+  var email = document.getElementById("nl-email").value.trim();
+  if (!email || email.indexOf("@") === -1) {
+    document.getElementById("nl-email").style.borderColor = "var(--red)";
+    setTimeout(function(){ document.getElementById("nl-email").style.borderColor = ""; }, 2000);
+    return;
+  }
+  post("newsletter", {email: email, created_at: new Date().toISOString()});
+  document.getElementById("nl-email").value = "";
+  var ok = document.getElementById("nl-ok");
+  ok.classList.add("show");
+  setTimeout(function(){ ok.classList.remove("show"); }, 5000);
+}
+
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add("vis");obs.unobserve(e.target);} });
+}, {threshold:0.1});
+document.querySelectorAll(".reveal").forEach(function(el){ obs.observe(el); });
+
+
+// ── FAVORIS ──
+// Utilise localStorage pour identifier le visiteur (pas besoin de compte)
+var FAV_KEY = 'mangeici_favs';
+var FAVS = JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+
+function initFavBtns() {
+  FAVS.forEach(function(id) {
+    var btn = document.getElementById('fav-'+id);
+    if (btn) { btn.textContent = '❤️'; btn.style.color = 'var(--red)'; }
+  });
+}
+
+function toggleFavori(id) {
+  var btn = document.getElementById('fav-'+id);
+  var idx = FAVS.indexOf(id);
+  if (idx !== -1) {
+    FAVS.splice(idx, 1);
+    if (btn) { btn.textContent = '🤍'; btn.style.color = 'var(--muted)'; }
+  } else {
+    FAVS.push(id);
+    if (btn) { btn.textContent = '❤️'; btn.style.color = 'var(--red)'; }
+  }
+  localStorage.setItem(FAV_KEY, JSON.stringify(FAVS));
+}
+
+
+// ── CARROUSEL PROMOS ──
+function loadPromoCarousel() {
+  fetch(SUPA + "/rest/v1/promotions?statut=eq.on&select=*,restaurants(nom,zone,plan)&order=created_at.desc", {headers:H})
+  .then(function(r){return r.json();})
+  .then(function(promos) {
+    if (!Array.isArray(promos) || !promos.length) return;
+    var section = document.getElementById('promo-carousel-section');
+    var track   = document.getElementById('promo-track');
+    if (!section || !track) return;
+    section.style.display = 'block';
+
+    // Build cards (doubled for seamless loop)
+    var cards = '';
+    var buildCard = function(p) {
+      var resto = p.restaurants || {};
+      return '<div style="flex-shrink:0;background:var(--card2);border:1px solid rgba(255,90,31,.25);border-radius:12px;padding:12px 16px;min-width:220px;max-width:260px;">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">'
+        + '<span style="font-size:18px;">🔥</span>'
+        + '<div>'
+        + '<div style="font-family:var(--font-d);font-size:12px;font-weight:800;color:var(--orange);">' + (p.reduction || '') + '</div>'
+        + '<div style="font-size:11px;color:var(--muted);">' + (resto.nom || '') + ' · ' + (resto.zone || '') + '</div>'
+        + '</div></div>'
+        + '<div style="font-size:12px;color:rgba(244,239,232,.8);font-weight:500;">' + (p.titre || '') + '</div>'
+        + '</div>';
+    };
+    promos.forEach(function(p){ cards += buildCard(p); });
+    // Double pour loop infini
+    promos.forEach(function(p){ cards += buildCard(p); });
+    track.innerHTML = cards;
+  })
+  .catch(function(){});
+}
+
+loadStats();
+loadFilters();
+loadPromos();
+loadRestos();
+loadPromoCarousel();
+
+// NAV SCROLL EFFECT
+window.addEventListener('scroll', function() {
+  var nav = document.getElementById('navbar');
+  if (nav) nav.classList.toggle('scrolled', window.scrollY > 40);
+  var btn = document.getElementById('scroll-top-btn');
+  if (btn) btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
+});
+
+// REVEAL ANIMATION
+var obs = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+
+loadStats();
+loadFilters();
+loadRestos();
+loadPromos();
+
+</script>
+</body>
+</html>

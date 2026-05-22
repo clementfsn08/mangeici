@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">MANGEICI — Profil restaurant</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#FF5A1F;--orange-dim:rgba(255,90,31,.14);--orange-border:rgba(255,90,31,.3);
+  --gold:#E8B84B;--gold-dim:rgba(232,184,75,.1);
+  --black:#080808;--surface:#0F0F0F;--card:#141414;--card2:#1C1C1C;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --white:#F5EFE6;--muted:rgba(245,239,230,.42);--muted2:rgba(245,239,230,.16);
+  --green:#4ADE80;--red:#F87171;
+  --font-d:"Clash Display","Syne",sans-serif;
+  --font-b:"Cabinet Grotesk","DM Sans",sans-serif;
+  --radius:20px;--rsm:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:var(--font-b);overflow-x:hidden}
+::selection{background:var(--orange);color:white}
+body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px 200px;pointer-events:none;z-index:9999;opacity:.35}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,8,8,.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--font-d);font-size:21px;font-weight:700;letter-spacing:-.03em;text-decoration:none;color:var(--white);display:flex;align-items:center;gap:9px}
+.nav-logo-mark{width:32px;height:32px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 14px rgba(255,90,31,.4)}
+.nav-logo em{color:var(--orange);font-style:normal}
+.nav-back{font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:5px}
+.nav-back:hover{color:var(--white)}
+
+/* ── HERO BANNER ── */
+.banner{height:380px;position:relative;margin-top:64px;overflow:hidden;background:var(--card)}
+.banner-img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.banner:hover .banner-img{transform:scale(1.03)}
+.banner-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,8,8,.2) 0%,rgba(8,8,8,.85) 100%)}
+.banner-content{position:absolute;bottom:0;left:0;right:0;padding:32px 40px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.banner-plan{display:inline-flex;align-items:center;gap:6px;background:rgba(255,90,31,.2);border:1px solid rgba(255,90,31,.35);padding:5px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:10px;backdrop-filter:blur(8px)}
+.banner-name{font-family:var(--font-d);font-size:clamp(28px,5vw,52px);font-weight:700;letter-spacing:-.03em;line-height:1.05}
+.banner-zone{font-size:15px;color:rgba(245,239,230,.65);margin-top:6px;display:flex;align-items:center;gap:6px}
+.banner-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn-avis-hero{display:inline-flex;align-items:center;gap:7px;background:var(--orange);color:white;text-decoration:none;font-family:var(--font-d);font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;transition:all .25s;box-shadow:0 4px 16px rgba(255,90,31,.35);letter-spacing:.01em}
+.btn-avis-hero:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(255,90,31,.5)}
+.btn-gps-hero{display:inline-flex;align-items:center;gap:7px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);color:#4ade80;font-family:var(--font-d);font-size:13px;font-weight:700;padding:11px 22px;border-radius:100px;text-decoration:none;transition:all .2s}
+.btn-gps-hero:hover{background:rgba(74,222,128,.18)}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:1100px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+
+/* ── SECTIONS ── */
+.section-block{margin-bottom:28px}
+.section-label{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange);margin-bottom:12px}
+.section-title{font-family:var(--font-d);font-size:26px;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}
+
+/* ── QUICK INFOS CARD ── */
+.info-card{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;margin-bottom:20px;position:sticky;top:84px}
+.info-card-name{font-family:var(--font-d);font-size:18px;font-weight:700;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.info-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none;padding-bottom:0}
+.info-icon{width:34px;height:34px;background:var(--card2);border:1px solid var(--border);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.info-label{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.info-val{font-size:13px;font-weight:500;line-height:1.5}
+
+/* Status */
+.status-open{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:#4ade80}
+.status-open::before{content:"";width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pg 2s ease infinite}
+.status-closed{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.status-closed::before{content:"";width:7px;height:7px;background:var(--muted);border-radius:50%}
+@keyframes pg{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.5)}50%{box-shadow:0 0 0 5px transparent}}
+
+/* Share button */
+.btn-share{width:100%;background:var(--card2);border:1px solid var(--border2);color:var(--muted);font-family:var(--font-b);font-size:13px;font-weight:500;padding:11px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-share:hover{color:var(--white);border-color:var(--border)}
+
+/* ── DESCRIPTION ── */
+.desc-text{font-size:15px;color:var(--muted);line-height:1.8;font-weight:300}
+
+/* ── CUISINE TAGS ── */
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:12px;background:var(--card2);border:1px solid var(--border2);padding:5px 14px;border-radius:100px;color:var(--muted);font-weight:500}
+.tag.highlight{background:var(--orange-dim);border-color:var(--orange-border);color:var(--orange)}
+
+/* ── MENU ── */
+.menu-cats{}
+.menu-cat-title{font-family:var(--font-d);font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin:20px 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.menu-item{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px}
+.menu-item:last-child{border-bottom:none}
+.menu-item-left{display:flex;align-items:center;gap:10px;min-width:0}
+.menu-item-emoji{font-size:22px;flex-shrink:0}
+.menu-item-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.menu-item-desc{font-size:12px;color:var(--muted);margin-top:2px}
+.menu-item-price{font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--orange);white-space:nowrap;flex-shrink:0}
+
+/* ── GALERIE ── */
+.galerie-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.galerie-img{aspect-ratio:4/3;border-radius:var(--rsm);overflow:hidden;background:var(--card2);cursor:pointer}
+.galerie-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.galerie-img:hover img{transform:scale(1.07)}
+
+/* ── PROMOS ── */
+.promo-card{background:linear-gradient(135deg,rgba(255,90,31,.12),rgba(255,90,31,.04));border:1px solid var(--orange-border);border-radius:var(--rsm);padding:16px;display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.promo-icon{font-size:28px}
+.promo-title{font-family:var(--font-d);font-size:14px;font-weight:700;margin-bottom:3px}
+.promo-desc{font-size:12px;color:var(--muted);line-height:1.5}
+
+/* ── AVIS ── */
+.rating-summary{background:var(--card);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;display:flex;gap:28px;align-items:center;margin-bottom:20px;flex-wrap:wrap}
+.rating-big{font-family:var(--font-d);font-size:64px;font-weight:700;color:var(--gold);line-height:1;flex-shrink:0}
+.rating-right{flex:1;min-width:140px}
+.rating-stars{font-size:20px;color:var(--gold);letter-spacing:2px;margin-bottom:6px}
+.rating-count{font-size:13px;color:var(--muted)}
+.rating-bars{flex:2;min-width:160px}
+.rbar-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.rbar-n{font-size:11px;color:var(--muted);width:12px;text-align:right;flex-shrink:0}
+.rbar-bg{flex:1;height:5px;background:var(--card2);border-radius:3px;overflow:hidden}
+.rbar-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .6s ease}
+.rbar-c{font-size:11px;color:var(--muted);width:20px;flex-shrink:0}
+
+.avis-grid{display:flex;flex-direction:column;gap:14px;margin-top:4px}
+.avis-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rsm);padding:18px}
+.avis-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.avis-avatar{width:36px;height:36px;border-radius:50%;background:var(--orange-dim);border:1px solid var(--orange-border);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;font-weight:700;color:var(--orange);flex-shrink:0}
+.avis-meta{margin-left:10px;flex:1}
+.avis-author{font-size:14px;font-weight:600}
+.avis-date{font-size:11px;color:var(--muted);margin-top:1px}
+.avis-stars{color:var(--gold);font-size:13px;letter-spacing:1px}
+.avis-text{font-size:14px;color:rgba(245,239,230,.75);line-height:1.65}
+
+/* Laisser un avis button */
+.btn-laisser-avis{display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(232,184,75,.1);border:1px solid rgba(232,184,75,.25);color:var(--gold);font-family:var(--font-d);font-size:14px;font-weight:700;padding:13px 24px;border-radius:100px;text-decoration:none;width:100%;transition:all .2s;margin-top:16px;letter-spacing:.01em}
+.btn-laisser-avis:hover{background:rgba(232,184,75,.18);border-color:rgba(232,184,75,.4)}
+
+/* ── HORAIRES TABLE ── */
+.horaires-table{width:100%;border-collapse:separate;border-spacing:0 6px}
+.horaires-table tr td{padding:8px 12px;font-size:13px}
+.horaires-table tr td:first-child{color:var(--muted);font-weight:500;width:110px}
+.horaires-table tr td:last-child{font-weight:600}
+.hor-open{color:var(--green)}
+.hor-closed{color:var(--muted)}
+
+/* ── INFOS PRATIQUES ── */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:14px}
+.ig-card{background:var(--card);border:1px solid var(--border);border-radius:var(--rsm);padding:16px;text-align:center;transition:border-color .2s}
+.ig-card:hover{border-color:rgba(255,90,31,.2)}
+.ig-icon{font-size:24px;margin-bottom:8px}
+.ig-label{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);margin-bottom:5px}
+.ig-val{font-size:13px;font-weight:500;line-height:1.5}
+
+/* ── GPS BUTTON ── */
+.gps-btn-big{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.22);color:#4ade80;font-family:var(--font-d);font-size:14px;font-weight:700;padding:14px 24px;border-radius:100px;text-decoration:none;width:100%;transition:all .2s;margin-top:8px}
+.gps-btn-big:hover{background:rgba(74,222,128,.15)}
+
+/* ── SCROLL TOP ── */
+.scroll-top{position:fixed;bottom:28px;right:28px;width:44px;height:44px;border-radius:50%;background:var(--orange);border:none;color:white;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(255,90,31,.4);z-index:99;transition:all .2s}
+.scroll-top:hover{transform:translateY(-2px)}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .55s ease,transform .55s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .main{grid-template-columns:1fr}
+  .info-card{position:static;order:-1}
+  .banner{height:260px}
+  .banner-content{padding:20px 24px}
+}
+@media(max-width:540px){
+  .galerie-grid{grid-template-columns:repeat(2,1fr)}
+  .rating-summary{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="mangeici-mvp.html">
+    <div class="nav-logo-mark">🍽️</div>
+    MANGE<em>ICI</em>
+  </a>
+  <a class="nav-back" href="mangeici-mvp.html">← Retour aux restaurants</a>
+</nav>
+
+<!-- HERO BANNER -->
+<div class="banner" id="banner">
+  <img class="banner-img" id="banner-img" src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200&q=80&fit=crop" alt="">
+  <div class="banner-overlay"></div>
+  <div class="banner-content">
+    <div>
+      <div class="banner-plan" id="banner-plan">⭐ Premium</div>
+      <div class="banner-name" id="banner-name">Chargement…</div>
+      <div class="banner-zone" id="banner-zone">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span>—</span>
+      </div>
+    </div>
+    <div class="banner-actions" id="banner-actions">
+      <a class="btn-avis-hero" id="btn-laisser-avis-top" href="#">⭐ Laisser un avis</a>
+      <a class="btn-gps-hero" id="btn-gps-top" href="#" target="_blank" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Y aller
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- LEFT COLUMN -->
+  <div>
+
+    <!-- Description -->
+    <div class="section-block reveal" id="section-desc" style="display:none">
+      <div class="section-label">À propos</div>
+      <div class="desc-text" id="resto-desc"></div>
+    </div>
+
+    <!-- Cuisine & ambiances -->
+    <div class="section-block reveal">
+      <div class="section-label">Cuisine & ambiance</div>
+      <div class="tag-row" id="tag-cuisine"></div>
+      <div class="tag-row" style="margin-top:8px" id="tag-ambiances"></div>
+    </div>
+
+    <!-- Promotions actives -->
+    <div class="section-block reveal" id="section-promos" style="display:none">
+      <div class="section-label">🔥 Promotions en cours</div>
+      <div id="promos-list"></div>
+    </div>
+
+    <!-- Menu -->
+    <div class="section-block reveal">
+      <div class="section-label">Menu</div>
+      <div class="menu-cats" id="menu-content">
+        <div style="color:var(--muted);font-size:13px;padding:12px 0">Chargement du menu…</div>
+      </div>
+    </div>
+
+    <!-- Galerie -->
+    <div class="section-block reveal" id="section-galerie" style="display:none">
+      <div class="section-label">Photos</div>
+      <div class="galerie-grid" id="galerie-grid"></div>
+    </div>
+
+    <!-- Avis -->
+    <div class="section-block reveal">
+      <div class="section-label">Ce que disent nos clients</div>
+      <div class="section-title">Avis &amp; témoignages</div>
+      <div class="rating-summary" id="rating-summary">
+        <div class="rating-big" id="rating-num">—</div>
+        <div class="rating-right">
+          <div class="rating-stars" id="rating-stars">★★★★★</div>
+          <div class="rating-count" id="rating-count">0 avis</div>
+        </div>
+        <div class="rating-bars" id="rating-bars"></div>
+      </div>
+      <div class="avis-grid" id="avis-grid">
+        <div style="text-align:center;padding:32px;color:var(--muted);font-size:14px">Aucun avis pour l'instant. Soyez le premier à donner votre avis !</div>
+      </div>
+      <a class="btn-laisser-avis" id="btn-laisser-avis-bottom" href="#">⭐ Laisser un avis sur ce restaurant</a>
+    </div>
+
+    <!-- Infos pratiques -->
+    <div class="section-block reveal">
+      <div class="section-label">Infos pratiques</div>
+      <div class="info-grid">
+        <div class="ig-card"><div class="ig-icon">📍</div><div class="ig-label">Adresse</div><div class="ig-val" id="ip-adresse">—</div></div>
+        <div class="ig-card"><div class="ig-icon">🕐</div><div class="ig-label">Horaires</div><div class="ig-val" id="ip-horaires">Voir ci-dessous</div></div>
+        <div class="ig-card"><div class="ig-icon">📞</div><div class="ig-label">Téléphone</div><div class="ig-val" id="ip-tel">—</div></div>
+        <div class="ig-card"><div class="ig-icon">💰</div><div class="ig-label">Prix minimum</div><div class="ig-val" id="ip-prix">—</div></div>
+      </div>
+    </div>
+
+    <!-- Horaires -->
+    <div class="section-block reveal" id="section-horaires" style="display:none">
+      <div class="section-label">Horaires d'ouverture</div>
+      <table class="horaires-table" id="horaires-table"></table>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN (sticky info card) -->
+  <div>
+    <div class="info-card">
+      <div class="info-card-name" id="ic-name">—</div>
+      <div class="info-row">
+        <div class="info-icon">📍</div>
+        <div><div class="info-label">Zone</div><div class="info-val" id="ic-zone">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">💰</div>
+        <div><div class="info-label">Prix min</div><div class="info-val" id="ic-prix">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🍴</div>
+        <div><div class="info-label">Cuisine</div><div class="info-val" id="ic-cuisine">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">⏰</div>
+        <div><div class="info-label">Statut</div><div class="info-val" id="ic-status">—</div></div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">⭐</div>
+        <div><div class="info-label">Note</div><div class="info-val" id="ic-note">—</div></div>
+      </div>
+      <a class="gps-btn-big" id="ic-gps" href="#" target="_blank" style="display:none">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        Obtenir l'itinéraire
+      </a>
+      <a class="btn-laisser-avis" id="ic-avis-btn" href="#">⭐ Laisser un avis</a>
+      <button class="btn-share" onclick="shareResto()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Partager ce restaurant
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<button class="scroll-top" id="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+
+const SUPA_URL="https://ldcweouzknksuudvroqu.supabase.co";
+const SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3dlb3V6a25rc3V1ZHZyb3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA0NjAsImV4cCI6MjA5MTY3NjQ2MH0.vyCqou8IAugFszrizK0eVRu3G2HylNKZmEp8vn0oKoE";
+const HDR={apikey:SUPA_KEY,Authorization:`Bearer ${SUPA_KEY}`,"Content-Type":"application/json"};
+async function supa(ep,q=""){const r=await fetch(`${SUPA_URL}/rest/v1/${ep}${q}`,{headers:HDR});return r.json()}
+
+
+
+// ══════════════════════
+// INIT — récupère l'ID depuis l'URL
+// ══════════════════════
+const params = new URLSearchParams(window.location.search);
+const RESTO_ID = params.get('id');
+
+if (!RESTO_ID) {
+  window.location.href = 'mangeici-mvp.html';
+} else {
+  loadProfil();
+}
+
+let MENUS_ALL = [];
+let CURRENT_CAT = 'all';
+
+async function loadProfil() {
+  // Charger le restaurant
+  const restos = await supa('restaurants', `?id=eq.${RESTO_ID}&select=*`);
+  const r = Array.isArray(restos) && restos[0];
+
+  if (!r) { window.location.href = 'mangeici-mvp.html'; return; }
+
+  // Vérifier plan Premium
+  if (r.plan !== 'premium') {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('not-premium').classList.add('show');
+    return;
+  }
+
+  // Charger le profil
+  const profils = await supa('profils', `?restaurant_id=eq.${RESTO_ID}`);
+  const profil = Array.isArray(profils) && profils[0];
+
+  // Charger le menu
+  const menus = await supa('menus', `?restaurant_id=eq.${RESTO_ID}&order=categorie`);
+  MENUS_ALL = Array.isArray(menus) ? menus : [];
+
+  // Charger les avis
+  const avis = await supa('avis', `?restaurant_id=eq.${RESTO_ID}&approuve=eq.true&order=created_at.desc`);
+  const avisList = Array.isArray(avis) ? avis : [];
+
+  // Masquer loading
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('profile-content').style.display = 'block';
+
+  // Remplir le profil
+  fillHeader(r, profil);
+  fillGalerie(r, profil);
+  fillMenu(MENUS_ALL);
+  fillAvis(avisList, r);
+  fillInfos(r, profil);
+
+  // Sticky bar
+  setTimeout(() => document.getElementById('sticky-bar').classList.add('show'), 800);
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);} });
+  }, {threshold:.1});
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+}
+
+function isOpen() { const h=new Date().getHours(); return h>=7&&h<=23; }
+
+function fillHeader(r, profil) {
+  const open = isOpen();
+  document.title = `MANGEICI — ${r.nom}`;
+
+  // Bannière
+  const banImg = profil?.banniere_url || r.photo_url;
+  if (banImg) {
+    const img = document.getElementById('banner-img');
+    img.src = banImg; img.style.display = 'block';
+    document.getElementById('banner-placeholder').style.display = 'none';
+  }
+
+  // Logo
+  if (profil?.logo_url) {
+    const li = document.getElementById('logo-img');
+    li.src = profil.logo_url; li.style.display = 'block';
+    document.getElementById('logo-emoji').style.display = 'none';
+    document.getElementById('logo-wrap').style.position = 'relative';
+  }
+
+  document.getElementById('ph-name').textContent = r.nom;
+  document.getElementById('ph-zone').innerHTML = `
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--orange)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    ${r.zone} · Cotonou`;
+
+  const sb = document.getElementById('ph-status-badge');
+  if (open) { sb.textContent='Ouvert'; sb.className='hbadge hbadge-open'; }
+  else { sb.textContent='Fermé'; sb.className='hbadge hbadge-closed'; }
+
+  const rating = r.rating || 0;
+  const nbAvis = r.nb_avis || 0;
+  document.getElementById('ph-stars').textContent = '★'.repeat(Math.round(rating));
+  document.getElementById('ph-rating').textContent = rating.toFixed(1);
+  document.getElementById('ph-nb-avis').textContent = `(${nbAvis} avis)`;
+
+  // Bio
+  document.getElementById('ph-bio').textContent = profil?.bio || r.description || 'Bienvenue dans notre restaurant. Découvrez notre cuisine et nos spécialités.';
+
+  // WhatsApp — numéro du resto ou afficher un message
+  const wa = profil?.whatsapp || r.telephone?.replace(/\s/g,'').replace(/[^0-9+]/g,'');
+  const waUrl = wa ? `https://wa.me/${wa.replace('+','')}?text=${encodeURIComponent(`Bonjour, j'ai trouvé votre restaurant sur MANGEICI et j'aimerais avoir des informations.`)}` : '#';
+  document.getElementById('btn-whatsapp').href = waUrl;
+
+  // Sticky
+  document.getElementById('sticky-name').textContent = r.nom;
+  document.getElementById('sticky-zone').textContent = r.zone;
+  document.getElementById('sticky-wa-btn').href = waUrl;
+}
+
+function fillGalerie(r, profil) {
+  const images = profil?.galerie?.length
+    ? profil.galerie
+    : [r.photo_url, r.photo_url, r.photo_url].filter(Boolean);
+
+  if (!images.length) {
+    document.getElementById('section-galerie').style.display = 'none'; return;
+  }
+
+  // Dupliquer pour l'effet infini
+  const doubled = [...images, ...images, ...images];
+  const track = document.getElementById('carousel-track');
+  track.innerHTML = doubled.map(url => `
+    <div class="carousel-item">
+      ${url
+        ? `<img src="${url}" alt="Photo restaurant" loading="lazy" onerror="this.parentElement.innerHTML='<div class=placeholder>🍽️</div>'">`
+        : '<div class="placeholder">🍽️</div>'}
+    </div>`).join('');
+}
+
+function fillMenu(items) {
+  if (!items.length) {
+    document.getElementById('section-menu').innerHTML = `
+      <div class="section-label">Notre carte</div>
+      <div style="color:var(--muted);font-size:14px;padding:20px 0">Menu non encore renseigné.</div>`;
+    return;
+  }
+
+  // Catégories uniques
+  const cats = ['all', ...new Set(items.map(m => m.categorie).filter(Boolean))];
+  const catLabels = { all:'Tous', plat:'🍽 Plats', boisson:'🥤 Boissons', entrée:'🥗 Entrées', dessert:'🍰 Desserts' };
+
+  document.getElementById('menu-cats').innerHTML = cats.map(c => `
+    <button class="menu-cat-btn ${c===CURRENT_CAT?'active':''}" onclick="filterMenuCat('${c}')">${catLabels[c]||c}</button>`).join('');
+
+  renderMenuGrid(items);
+}
+
+function filterMenuCat(cat) {
+  CURRENT_CAT = cat;
+  document.querySelectorAll('.menu-cat-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.menu-cat-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(cat==='all'?'tous':cat.toLowerCase())) b.classList.add('active');
+  });
+  const filtered = cat === 'all' ? MENUS_ALL : MENUS_ALL.filter(m => m.categorie === cat);
+  renderMenuGrid(filtered);
+}
+
+function renderMenuGrid(items) {
+  document.getElementById('menu-grid').innerHTML = items.map(m => `
+    <div class="menu-card">
+      <div class="menu-card-img">${m.emoji||'🍽'}</div>
+      <div class="menu-card-body">
+        <div class="menu-card-cat">${m.categorie||'plat'}</div>
+        <div class="menu-card-name">${m.nom}</div>
+        <div class="menu-card-desc">${m.description||'—'}</div>
+      </div>
+      <div class="menu-card-foot">
+        <div class="menu-price">${(m.prix||0).toLocaleString('fr-FR')}F</div>
+        <div class="${m.disponible?'menu-dispo':'menu-indispo'}">${m.disponible?'✓ Disponible':'Indisponible'}</div>
+      </div>
+    </div>`).join('') || '<div style="color:var(--muted);font-size:13px;padding:12px 0">Aucun plat dans cette catégorie.</div>';
+}
+
+function fillAvis(avisArr, r) {
+  const rating = r.rating || 0;
+  const nbAvis = r.nb_avis || avisArr.length || 0;
+
+  // Synthèse note
+  const barData = [5,4,3,2,1].map(n => ({
+    n, count: avisArr.filter(a=>a.note===n).length
+  }));
+
+  document.getElementById('rating-summary').innerHTML = `
+    <div class="rating-big">
+      <div class="rating-num-big">${rating.toFixed(1)}</div>
+      <div class="rating-stars-big">${'★'.repeat(Math.round(rating))}</div>
+      <div class="rating-count">${nbAvis} avis</div>
+    </div>
+    <div class="rating-bars">
+      ${barData.map(({n,count}) => `
+        <div class="rating-bar-row">
+          <div class="rating-bar-label">${n}</div>
+          <div class="rating-bar-bg"><div class="rating-bar-fill" style="width:${nbAvis?Math.round(count/nbAvis*100):0}%"></div></div>
+          <div class="rating-bar-count">${count}</div>
+        </div>`).join('')}
+    </div>`;
+
+  if (!avisArr.length) {
+    document.getElementById('avis-grid').innerHTML = '<div style="color:var(--muted);font-size:14px;grid-column:1/-1">Aucun avis pour l\'instant. Soyez le premier à donner votre avis !</div>';
+    return;
+  }
+
+  document.getElementById('avis-grid').innerHTML = avisArr.map(a => `
+    <div class="avis-card">
+      <div class="avis-header">
+        <div class="avis-avatar">${a.auteur?.[0]?.toUpperCase()||'?'}</div>
+        <div>
+          <div class="avis-auteur">${a.auteur}</div>
+          <div class="avis-date">${new Date(a.created_at).toLocaleDateString('fr-FR',{month:'long',year:'numeric'})}</div>
+        </div>
+      </div>
+      <div class="avis-stars">${'★'.repeat(a.note)}${'☆'.repeat(5-a.note)}</div>
+      <div class="avis-text">${a.commentaire||''}</div>
+    </div>`).join('');
+}
+
+function fillInfos(r, profil) {
+  const open = isOpen();
+  document.getElementById('infos-grid').innerHTML = [
+    { icon:'📍', label:'Adresse', val: r.adresse || r.zone+', Cotonou' },
+    { icon:'🕐', label:'Horaires', val: open?'Ouvert maintenant':'Fermé · 7h–23h' },
+    { icon:'📞', label:'Téléphone', val: r.afficher_tel!==false ? r.telephone : '—' },
+    { icon:'💰', label:'Prix minimum', val: (r.prix_min||0).toLocaleString('fr-FR')+'F / plat' },
+    ...(profil?.instagram ? [{ icon:'📱', label:'Instagram', val:'@'+profil.instagram }] : []),
+  ].map(({icon,label,val}) => `
+    <div class="info-card">
+      <div class="info-icon">${icon}</div>
+      <div class="info-label">${label}</div>
+      <div class="info-val">${val}</div>
+    </div>`).join('');
+}
+
+function scrollToAvis() {
+  document.getElementById('section-avis').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// Sticky bar au scroll
+window.addEventListener('scroll', () => {
+  const bar = document.getElementById('sticky-bar');
+  if (window.scrollY > 300) bar.classList.add('show');
+}, {passive:true});
+
+
+// REVEAL
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);} });
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+
+// SCROLL TOP
+window.addEventListener('scroll',function(){
+  var b=document.getElementById('scroll-top-btn');
+  if(b) b.style.display=window.scrollY>300?'flex':'none';
+});
+
+// SHARE
+function shareResto() {
+  var name = document.getElementById('banner-name').textContent;
+  var url  = window.location.href;
+  if (navigator.share) {
+    navigator.share({title: name + ' sur MANGEICI', url: url});
+  } else {
+    navigator.clipboard.writeText(url).then(function(){
+      alert('Lien copié !');
+    });
+  }
+}
+
+</script>
+</body>
+</html>
