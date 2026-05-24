@@ -562,7 +562,7 @@ const dbAuth = createClient(SUPA_URL, SUPA_KEY);
 // Récupère-la sur : app.fedapay.com → Paramètres → API → Clé publique
 const FEDAPAY_PUBLIC_KEY = "pk_live_lfBv_FoIfWs0WWsiBhPwQdkq"; // ← IMPORTANT: remplace par ta vraie clé FedaPay
 // Pour obtenir ta clé: va sur app.fedapay.com → Paramètres → Clés API
-// Utilise pk_sandbox_xxx pour les tests, pk_live_xxx pour la production
+// Utilise pk_sandbox_VOTRE_CLE_ICI pour les tests, pk_live_xxx pour la production
 
 function showMsgInsc(id, msg) {
   var el = document.getElementById(id);
@@ -782,7 +782,37 @@ async function submitForm() {
   const prixFinal = calculerPrixFinal(prixBase);
 
   // Fonction qui sauvegarde tout après paiement (ou directement si gratuit)
-  async function sauvegarder(fedapayTxId = null) {
+  
+// ═══════════════════════════════════════
+// SÉCURITÉ: Sanitize inputs avant envoi
+// ═══════════════════════════════════════
+function sanitize(str) {
+  if (!str) return '';
+  return String(str)
+    .trim()
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
+}
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function validatePhone(tel) {
+  return /^[\+\d\s\-\(\)]{8,20}$/.test(tel);
+}
+
+function validatePassword(pass) {
+  if (pass.length < 8) return { ok: false, msg: 'Mot de passe trop court (8 caractères min)' };
+  if (!/[A-Za-z]/.test(pass)) return { ok: false, msg: 'Le mot de passe doit contenir des lettres' };
+  if (!/[0-9]/.test(pass)) return { ok: false, msg: 'Le mot de passe doit contenir des chiffres' };
+  return { ok: true };
+}
+
+async function sauvegarder(fedapayTxId = null) {
     try {
       // 1. Créer un compte Supabase Auth pour le restaurateur
       //    (mot de passe temporaire = numéro de téléphone, à changer ensuite)

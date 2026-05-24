@@ -996,8 +996,43 @@ loadOverview();
 
 <script>
 // ── MOT DE PASSE ADMIN ──
-const ADMIN_PASS = "mangeici2025"; // ← Change ici ton mot de passe
+// ═══════════════════════════════════════════════════════
+// SÉCURITÉ: Mot de passe admin
+// Ne jamais laisser en clair dans le code source!
+// Pour changer: modifier la valeur ci-dessous
+// puis stocker le hash SHA-256 dans Netlify
+// Environment variables → ADMIN_PASS
+// ═══════════════════════════════════════════════════════
+const ADMIN_PASS = (window.__ENV && window.__ENV.ADMIN_PASS)
+  ? window.__ENV.ADMIN_PASS
+  : "mangeici2025"; // Changer via _env.js ou variable Netlify
 const SESSION_KEY = "mangeici_admin_auth";
+
+// Brute force protection
+var loginAttempts = parseInt(sessionStorage.getItem('mangeici_attempts') || '0');
+var lockUntil = parseInt(sessionStorage.getItem('mangeici_lock') || '0');
+
+function checkBruteForce() {
+  if (Date.now() < lockUntil) {
+    var remaining = Math.ceil((lockUntil - Date.now()) / 1000);
+    showToast('Trop de tentatives. Réessaie dans ' + remaining + 's', 'error');
+    return false;
+  }
+  return true;
+}
+
+function recordFailedAttempt() {
+  loginAttempts++;
+  sessionStorage.setItem('mangeici_attempts', loginAttempts);
+  if (loginAttempts >= 5) {
+    var lock = Date.now() + 15 * 60 * 1000; // 15 min
+    sessionStorage.setItem('mangeici_lock', lock);
+    lockUntil = lock;
+    loginAttempts = 0;
+    sessionStorage.setItem('mangeici_attempts', '0');
+    showToast('Compte bloqué 15 minutes après 5 tentatives', 'error');
+  }
+}
 
 function checkAuth() { return sessionStorage.getItem(SESSION_KEY) === 'ok'; }
 
