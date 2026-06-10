@@ -1,104 +1,103 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MANGEICI — Connexion restaurateur</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=cabinet-grotesk@400,500,700,800&display=swap" rel="stylesheet">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MANGEICI — Connexion</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#FAFAF7;--cream:#F5F0E8;--sand:#EDE8DF;--sand-2:#E2DDD3;
+  --stone:#D4CFC4;--warm-gray:#9C978E;--dark:#2C2A26;--dark-2:#4A4740;--ink:#1A1816;
+  --orange:#E85D20;--orange-light:rgba(232,93,32,.1);--orange-border:rgba(232,93,32,.25);
+  --gold:#C4933A;--gold-light:rgba(196,147,58,.12);
+  --green:#3A7D44;--green-light:rgba(58,125,68,.1);--green-border:rgba(58,125,68,.25);
+  --red:#C0392B;--red-light:rgba(192,57,43,.1);--red-border:rgba(192,57,43,.25);
+  --font-d:'Playfair Display',Georgia,serif;
+  --font-b:'Plus Jakarta Sans',system-ui,sans-serif;
+  --shadow-sm:0 1px 3px rgba(44,42,38,.08),0 4px 12px rgba(44,42,38,.06);
+  --shadow:0 4px 16px rgba(44,42,38,.1),0 12px 40px rgba(44,42,38,.08);
+  --shadow-lg:0 8px 32px rgba(44,42,38,.12),0 32px 80px rgba(44,42,38,.1);
+  --radius:18px;--rsm:10px;--rxs:7px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ivory);color:var(--dark);font-family:var(--font-b);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--orange);color:white}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--sand)}
+::-webkit-scrollbar-thumb{background:var(--stone);border-radius:3px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;padding:0 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(250,250,247,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--sand-2)}
+.nav-logo{font-family:var(--font-d);font-size:21px;font-weight:700;letter-spacing:-.02em;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:9px}
+.nav-logo-mark{width:32px;height:32px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 3px 10px rgba(232,93,32,.3)}
+.nav-logo em{color:var(--orange);font-style:normal}
+.nav-back{font-size:13px;color:var(--warm-gray);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:5px}
+.nav-back:hover{color:var(--orange)}
+.field{margin-bottom:16px}
+.field label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;background:var(--cream);border:1px solid var(--sand-2);color:var(--dark);font-family:var(--font-b);font-size:14px;font-weight:400;padding:12px 15px;border-radius:var(--rxs);outline:none;transition:border-color .2s,box-shadow .2s,background .2s;appearance:none;-webkit-appearance:none}
+.field input:focus,.field select:focus,.field textarea:focus{background:white;border-color:var(--orange-border);box-shadow:0 0 0 3px rgba(232,93,32,.08)}
+.field input::placeholder,.field textarea::placeholder{color:var(--stone);font-style:italic}
+.field textarea{min-height:100px;resize:vertical;line-height:1.6}
+.btn{background:var(--orange);color:white;border:none;font-family:var(--font-b);font-size:14px;font-weight:700;padding:13px 24px;border-radius:100px;cursor:pointer;transition:all .25s;box-shadow:0 3px 12px rgba(232,93,32,.3);letter-spacing:.01em}
+.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 5px 18px rgba(232,93,32,.42)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.msg{padding:12px 16px;border-radius:var(--rxs);font-size:13px;margin:10px 0;display:none;line-height:1.5}
+.msg.ok{background:var(--green-light);border:1px solid var(--green-border);color:var(--green);display:block}
+.msg.ko{background:var(--red-light);border:1px solid var(--red-border);color:var(--red);display:block}
+.scroll-top{position:fixed;bottom:28px;right:28px;width:42px;height:42px;border-radius:50%;background:var(--ink);border:none;color:var(--ivory);font-size:17px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow);z-index:99;transition:all .2s}
+.scroll-top:hover{background:var(--orange);transform:translateY(-2px)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .6s ease,transform .6s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--orange:#FF5A1F;--orange-dim:rgba(255,90,31,.14);--orange-border:rgba(255,90,31,.3);--gold:#E8B84B;--black:#080808;--card:#141414;--card2:#1C1C1C;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);--white:#F5EFE6;--muted:rgba(245,239,230,.42);--muted2:rgba(245,239,230,.16);--green:#4ADE80;--green-dim:rgba(74,222,128,.1);--green-border:rgba(74,222,128,.25);--red:#F87171;--red-dim:rgba(248,113,113,.1);--red-border:rgba(248,113,113,.25);--font-d:"Clash Display","Syne",sans-serif;--font-b:"Cabinet Grotesk","DM Sans",sans-serif}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--black);color:var(--white);font-family:var(--font-b);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow:hidden}
-body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");background-size:200px 200px;pointer-events:none;z-index:9999;opacity:.35}
-/* Orbs */
-body::after{content:"";position:fixed;width:600px;height:600px;background:radial-gradient(circle,rgba(255,90,31,.1) 0%,transparent 70%);top:-200px;left:-200px;pointer-events:none;animation:drift 16s ease-in-out infinite alternate}
-@keyframes drift{from{transform:translate(0,0)}to{transform:translate(80px,60px)}}
-.orb2{position:fixed;width:400px;height:400px;background:radial-gradient(circle,rgba(232,184,75,.07) 0%,transparent 70%);bottom:-100px;right:-100px;pointer-events:none;animation:drift2 12s ease-in-out infinite alternate}
-@keyframes drift2{from{transform:translate(0,0)}to{transform:translate(-50px,-40px)}}
-
-/* Card */
-.login-card{width:100%;max-width:440px;background:var(--card);border:1px solid var(--border2);border-radius:24px;padding:40px;position:relative;z-index:2;box-shadow:0 40px 100px rgba(0,0,0,.6);animation:fadeUp .5s ease both}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.login-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:24px 24px 0 0;opacity:.7}
-
-/* Logo */
-.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px;text-decoration:none;color:var(--white)}
-.logo-mark{width:36px;height:36px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 4px 16px rgba(255,90,31,.4)}
-.logo-text{font-family:var(--font-d);font-size:22px;font-weight:700;letter-spacing:-.03em}
+body{background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:24px;position:relative;overflow:hidden}
+body::before{content:"";position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(232,93,32,.06) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(196,147,58,.05) 0%,transparent 50%);pointer-events:none}
+body::after{content:"";position:fixed;background-image:radial-gradient(circle,rgba(44,42,38,.06) 1px,transparent 1px);background-size:28px 28px;inset:0;pointer-events:none;mask-image:radial-gradient(ellipse 80% 80% at center,black 30%,transparent 100%)}
+.card{width:100%;max-width:420px;background:white;border:1px solid var(--sand-2);border-radius:24px;padding:40px;box-shadow:var(--shadow-lg);animation:fadeUp .5s ease both;position:relative;z-index:2}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:24px 24px 0 0}
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px;text-decoration:none;color:var(--ink)}
+.logo-mark{width:38px;height:38px;background:var(--orange);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 12px rgba(232,93,32,.3)}
+.logo-text{font-family:var(--font-d);font-size:22px;font-weight:700;letter-spacing:-.02em}
 .logo-text em{color:var(--orange);font-style:normal}
-
-/* Tabs */
-.tabs{display:flex;background:var(--card2);border-radius:100px;padding:4px;gap:0;margin-bottom:24px}
-.tab{flex:1;padding:9px 16px;border-radius:100px;font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .25s;text-align:center;border:none;background:none}
-.tab.active{background:var(--orange);color:white;box-shadow:0 4px 14px rgba(255,90,31,.3)}
-
-/* Form panels */
+.tabs{display:flex;background:var(--cream);border-radius:100px;padding:4px;margin-bottom:22px;border:1px solid var(--sand-2)}
+.tab{flex:1;padding:9px;border-radius:100px;font-family:var(--font-b);font-size:13px;font-weight:600;cursor:pointer;color:var(--warm-gray);transition:all .25s;text-align:center;border:none;background:none}
+.tab.active{background:var(--orange);color:white;box-shadow:0 3px 12px rgba(232,93,32,.3)}
 .panel{display:none}.panel.active{display:block}
-
-/* Fields */
-.field{margin-bottom:15px}
-.field label{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--orange);display:block;margin-bottom:6px}
-.field input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--white);font-family:var(--font-b);font-size:14px;padding:12px 16px;border-radius:10px;outline:none;transition:border-color .2s,box-shadow .2s}
-.field input:focus{border-color:var(--orange-border);box-shadow:0 0 0 3px rgba(255,90,31,.1)}
-.field input::placeholder{color:var(--muted2);font-style:italic}
-
-/* Button */
-.btn{width:100%;background:var(--orange);color:white;border:none;font-family:var(--font-d);font-size:14px;font-weight:700;padding:14px;border-radius:100px;cursor:pointer;transition:all .25s;box-shadow:0 4px 16px rgba(255,90,31,.3);letter-spacing:.01em}
-.btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(255,90,31,.45)}
-.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-ghost{width:100%;background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:var(--font-b);font-size:14px;padding:12px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:8px}
-.btn-ghost:hover{color:var(--white);border-color:var(--border)}
-
-/* Messages */
-.msg{padding:12px 16px;border-radius:10px;font-size:13px;margin:12px 0;display:none;line-height:1.5}
-.msg.ok{background:var(--green-dim);border:1px solid var(--green-border);color:var(--green);display:block}
-.msg.ko{background:var(--red-dim);border:1px solid var(--red-border);color:var(--red);display:block}
-
-/* New password form */
-#new-pass-section{display:none}
-
-/* Reset link */
-.forgot{font-size:12px;color:var(--muted);text-align:right;margin-top:6px;cursor:pointer;transition:color .2s;text-decoration:underline;text-underline-offset:2px}
+.forgot{font-size:12px;color:var(--warm-gray);text-align:right;margin-top:5px;cursor:pointer;transition:color .2s;text-decoration:underline;text-underline-offset:2px}
 .forgot:hover{color:var(--orange)}
-
-/* Bottom link */
-.bottom-link{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.btn-full{width:100%}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--sand-2);color:var(--warm-gray);font-family:var(--font-b);font-size:14px;font-weight:500;padding:12px;border-radius:100px;cursor:pointer;transition:all .2s;margin-top:8px}
+.btn-ghost:hover{border-color:var(--orange-border);color:var(--orange)}
+#new-pass-section{display:none}
+.bottom-link{text-align:center;margin-top:20px;font-size:13px;color:var(--warm-gray);position:relative;z-index:2}
 .bottom-link a{color:var(--orange);text-decoration:none;font-weight:600}
-.bottom-link a:hover{text-decoration:underline}
-
-/* Nav back */
-.nav-back{position:fixed;top:20px;left:24px;font-size:13px;color:var(--muted);text-decoration:none;transition:color .2s;z-index:10;display:flex;align-items:center;gap:5px}
-.nav-back:hover{color:var(--white)}
+.nav-back-fixed{position:fixed;top:20px;left:24px;font-size:13px;color:var(--warm-gray);text-decoration:none;transition:color .2s;z-index:10;display:flex;align-items:center;gap:5px}
+.nav-back-fixed:hover{color:var(--orange)}
 </style>
 </head>
 <body>
-<div class="orb2"></div>
-<a class="nav-back" href="mangeici-mvp.html">← Retour au site</a>
-
-<div class="login-card">
+<a class="nav-back-fixed" href="mangeici-mvp.html">← Retour au site</a>
+<div class="card">
   <a class="logo" href="mangeici-mvp.html">
     <div class="logo-mark">🍽️</div>
     <div class="logo-text">MANGE<em>ICI</em></div>
   </a>
-
   <div id="new-pass-section">
-    <div style="font-family:var(--font-d);font-size:18px;font-weight:700;margin-bottom:6px;">🔑 Nouveau mot de passe</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:20px;">Choisis un nouveau mot de passe sécurisé.</div>
+    <div style="font-family:var(--font-d);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px">🔑 Nouveau mot de passe</div>
+    <div style="font-size:13px;color:var(--warm-gray);margin-bottom:20px">Choisis un nouveau mot de passe sécurisé.</div>
     <div class="field"><label>Nouveau mot de passe</label><input type="password" id="new-pass" placeholder="8 caractères min"></div>
     <div class="field"><label>Confirmer</label><input type="password" id="new-pass2" placeholder="Même mot de passe"></div>
     <div class="msg" id="new-pass-msg"></div>
-    <button class="btn" id="btn-new-pass" onclick="updatePassword()">✓ Mettre à jour</button>
+    <button class="btn btn-full" onclick="updatePassword()">✓ Mettre à jour</button>
   </div>
-
   <div id="main-section">
     <div class="tabs">
       <button class="tab active" id="tab-login" onclick="switchTab('login')">Se connecter</button>
       <button class="tab" id="tab-reset" onclick="switchTab('reset')">Mot de passe oublié</button>
     </div>
-
-    <!-- LOGIN -->
     <div class="panel active" id="panel-login">
       <div class="msg" id="login-msg"></div>
       <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="ton@email.com"></div>
@@ -107,26 +106,22 @@ body::after{content:"";position:fixed;width:600px;height:600px;background:radial
         <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
         <div class="forgot" onclick="switchTab('reset')">Mot de passe oublié ?</div>
       </div>
-      <button class="btn" id="btn-login" onclick="doLogin()">Se connecter →</button>
+      <button class="btn btn-full" id="btn-login" onclick="doLogin()">Se connecter →</button>
       <button class="btn-ghost" onclick="location.href='mangeici-inscription.html'">Pas encore inscrit ? Créer un compte</button>
     </div>
-
-    <!-- RESET -->
     <div class="panel" id="panel-reset">
-      <div style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">Entre ton email pour recevoir un lien de réinitialisation de mot de passe.</div>
+      <div style="font-size:13px;color:var(--warm-gray);margin-bottom:18px;line-height:1.6">Entre ton email pour recevoir un lien de réinitialisation.</div>
       <div class="msg" id="reset-msg"></div>
       <div class="field"><label>Email</label><input type="email" id="reset-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')doReset()"></div>
-      <button class="btn" id="btn-reset" onclick="doReset()">📧 Envoyer le lien</button>
+      <button class="btn btn-full" id="btn-reset" onclick="doReset()">📧 Envoyer le lien</button>
       <button class="btn-ghost" onclick="switchTab('login')">← Retour à la connexion</button>
     </div>
   </div>
 </div>
-
-<div class="bottom-link">
-  Nouveau restaurant ? <a href="mangeici-inscription.html">Inscrire mon resto →</a>
-</div>
-
+<div class="bottom-link">Nouveau restaurant ? <a href="mangeici-inscription.html">Inscrire mon resto →</a></div>
 <script>
+
+
 
 const SUPA_URL = "https://ldcweouzknksuudvroqu.supabase.co";
 const SUPA_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkY3dlb3V6a25rc3V1ZHZyb3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMDA0NjAsImV4cCI6MjA5MTY3NjQ2MH0.vyCqou8IAugFszrizK0eVRu3G2HylNKZmEp8vn0oKoE";
@@ -300,6 +295,8 @@ async function saveNewPassword(token) {
     }, 1500);
   }
 }
+
+
 
 </script>
 </body>
