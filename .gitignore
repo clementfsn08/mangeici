@@ -1,3 +1,19 @@
+# MANGEICI — .gitignore
+# ═══════════════════════════════════════
+# Fichiers JAMAIS commités sur GitHub
+# ═══════════════════════════════════════
+
+# Variables d'environnement avec vraies clés
 _env.js
 .env
-*.sql
+.env.local
+.env.production
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+*.log
+
+# Backups
+*.bak
+*.backup
